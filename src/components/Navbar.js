@@ -11,16 +11,12 @@ import {
 } from '@mui/material'
 import PrecisionManufacturingIcon from '@mui/icons-material/PrecisionManufacturing'
 import DrawerComponent from './DrawerComponent'
-
+import Utils from './Utils'
+import { Link } from 'react-router-dom'
 const Navbar = () => {
   const theme = useTheme()
   const isMatch = useMediaQuery(theme.breakpoints.down('sm'))
   const [value, setValue] = useState()
-  const [mobileOpen, setMobileOpen] = React.useState(false)
-
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen)
-  }
 
   return (
     <AppBar
@@ -45,9 +41,18 @@ const Navbar = () => {
                 textColor='inherit'
                 indicatorColor='secondary'
               >
-                <Tab label='Dashboard' />
-                <Tab label='Clients' />
-                <Tab value='Accounts' />
+                {Utils.MainMenu.map((item) => {
+                  return (
+                    <Tab
+                      label={item.text}
+                      to={item.path}
+                      value={item.path}
+                      component={Link}
+                    >
+                      <Link to={item.path}></Link>
+                    </Tab>
+                  )
+                })}
               </Tabs>
             </Grid>
           </Grid>
