@@ -9,7 +9,7 @@ import {
   ListItemText,
 } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
-import Utils from './Utils'
+import Utils from './Utils/MenuItems'
 import { Link } from 'react-router-dom'
 const DrawerComponent = () => {
   const [open, setOpen] = useState(false)

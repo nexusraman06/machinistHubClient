@@ -19,6 +19,12 @@ const MenuItems = {
       path: "/create",
       SubMenu: null
     },
+    {
+      text: "Reports",
+
+      path: "/reports",
+      SubMenu: null
+    },
   ],
 };
 

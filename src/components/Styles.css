@@ -1,0 +1,28 @@
+.card{
+    padding: 10px;
+    margin: 20px;
+}
+
+.formButton{
+   float:right
+
+}
+.clientCard{
+    min-width:'200px';
+    margin:20px
+}
+
+
+.baseFlex{
+    
+  display:flex;
+  justify-content: space-between;
+}
+
+.dashboardCard{
+  width:  150px;
+}
+
+.reportMargin{
+ margin-bottom: 20px;
+}

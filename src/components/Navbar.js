@@ -11,7 +11,7 @@ import {
 } from '@mui/material'
 import PrecisionManufacturingIcon from '@mui/icons-material/PrecisionManufacturing'
 import DrawerComponent from './DrawerComponent'
-import Utils from './Utils'
+import Utils from './Utils/MenuItems'
 import { Link } from 'react-router-dom'
 const Navbar = () => {
   const theme = useTheme()
@@ -41,12 +41,12 @@ const Navbar = () => {
                 textColor='inherit'
                 indicatorColor='secondary'
               >
-                {Utils.MainMenu.map((item) => {
+                {Utils.MainMenu.map((item, i) => {
                   return (
                     <Tab
+                      key={'tab' + i}
                       label={item.text}
                       to={item.path}
-                      value={item.path}
                       component={Link}
                     >
                       <Link to={item.path}></Link>

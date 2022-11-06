@@ -4,6 +4,8 @@ import Navbar from './components/Navbar'
 import { Route, Routes } from 'react-router-dom'
 import Dashboard from './components/Dashboard'
 import Clients from './components/Clients'
+import Reports from './components/Reports'
+
 
 function App() {
   return (
@@ -13,6 +15,8 @@ function App() {
         <Route path='/' element={<Dashboard />} />
         <Route path='/create' element={<InputForm />} />
         <Route path='/clients' element={<Clients />} />
+        <Route path='/reports' element={<Reports />} />
+
       </Routes>
     </div>
   )
