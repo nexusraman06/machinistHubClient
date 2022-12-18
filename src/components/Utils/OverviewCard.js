@@ -5,9 +5,7 @@ import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
 import axios from 'axios'
 import '../Styles.css'
-import Select from '@mui/material/Select'
-import MenuItem from '@mui/material/MenuItem'
-import FormControl from '@mui/material/FormControl'
+
 const OverviewCard = () => {
   const [income, setIncome] = useState(0)
   const [expense, setExpenses] = useState(0)
@@ -26,25 +24,7 @@ const OverviewCard = () => {
   }, [])
   return (
     <div>
-      <div>
-        <FormControl
-          className='formButton'
-          variant='standard'
-          sx={{ m: 1, minWidth: 120 }}
-        >
-          <Select
-            labelId='demo-simple-select-standard-label'
-            id='demo-simple-select-standard'
-            label='Category'
-          >
-            <MenuItem value={'daily'}>Daily</MenuItem>
-            <MenuItem value={'weekly'}>Weekly</MenuItem>
-            <MenuItem value={'monthly'}>Monthly</MenuItem>
-            <MenuItem value={'custom'}>Custom</MenuItem>
-
-          </Select>
-        </FormControl>
-      </div>
+    
       <Grid container spacing={4}>
         <Grid item xs={12} sm={6} md={4} lg={3}>
           <Card>

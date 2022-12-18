@@ -9,28 +9,111 @@ import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 import axios from 'axios'
 import AccordianComponent from './Utils/AccordianComponent'
+import FormControl from '@mui/material/FormControl'
+import Select from '@mui/material/Select'
+import MenuItem from '@mui/material/MenuItem'
+import moment from 'moment'
+import TablePagination from '@mui/material/TablePagination'
+import MicsData from './MicsData'
+const DailyActivities = (props) => {
+  const [category, setCategory] = React.useState('submersible')
+  const [page, setPage] = React.useState(0)
+  const [rowsPerPage, setRowsPerPage] = React.useState(10)
+  const [submersibleData, setSubmersibleData] = useState([])
+  const [fanData, setFanData] = useState([])
+  const [formattedFanData, setFormattedFanData] = useState([])
+  const [formattedSubData, setFormattedSubData] = useState([])
+  const handleChange = (event) => {
+    setCategory(event.target.value)
+  }
 
-const DailyActivities = () => {
-  const [expenses, setExpenses] = useState()
-  const [income, setIncome] = useState()
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(+event.target.value)
+    setPage(0)
+  }
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage)
+  }
 
   useEffect(() => {
-    axios.get(`/expense`).then((res) => {
-      setExpenses(res.data)
-    })
-    axios.get(`/income`).then((res) => {
-      setIncome(res.data)
-    })
-  }, [])
+    if (category === 'submersible') {
+      axios.get(`/submersible`).then((res) => {
+        setSubmersibleData(res.data)
+      })
+    }
 
-  function createData(name, calories, fat, carbs, protein) {
-    return { name, calories, fat, carbs, protein }
-  }
+    if (category === 'fan') {
+      axios.get(`/fan`).then((res) => {
+        setFanData(res.data)
+      })
+    }
+  }, [category])
+
+  useEffect(() => {
+    let backwardDate = new Date()
+    if (props.calenderValue === 'weekly') {
+      backwardDate.setDate(backwardDate.getDate() - 7)
+    }
+    if (props.calenderValue === 'monthly') {
+      backwardDate.setDate(backwardDate.getDate() - 30)
+    }
+
+    let incomeArr = []
+    let expenseArr = []
+    if (props.calenderValue === 'daily') {
+      for (let i = 0; i < fanData.length; i++) {
+        console.log(new Date().toLocaleDateString())
+        console.log(new Date(fanData[i].date).toLocaleDateString())
+        if (
+          new Date().toLocaleDateString() ===
+          new Date(fanData[i].date).toLocaleDateString()
+        ) {
+          incomeArr.push(fanData[i])
+          setFormattedFanData(incomeArr)
+        }
+      }
+      for (let i = 0; i < submersibleData.length; i++) {
+        console.log(new Date().toLocaleDateString())
+        console.log(new Date(submersibleData[i].date).toLocaleDateString())
+        if (
+          new Date().toLocaleDateString() ===
+          new Date(submersibleData[i].date).toLocaleDateString()
+        ) {
+          expenseArr.push(submersibleData[i])
+          setFormattedSubData(expenseArr)
+        }
+      }
+    } else if (
+      props.calenderValue === 'weekly' ||
+      props.calenderValue === 'monthly'
+    ) {
+      for (let i = 0; i < fanData.length; i++) {
+        if (
+          new Date(fanData[i].date).getTime() >= backwardDate.getTime() &&
+          new Date(fanData[i].date).getTime() <= Date.now()
+        ) {
+          incomeArr.push(fanData[i])
+          setFormattedFanData(incomeArr)
+        }
+      }
+      for (let i = 0; i < submersibleData.length; i++) {
+        if (
+          new Date(submersibleData[i].date).getTime() >=
+            backwardDate.getTime() &&
+          new Date(submersibleData[i].date).getTime() <= Date.now()
+        ) {
+          expenseArr.push(submersibleData[i])
+          setFormattedSubData(expenseArr)
+        }
+      }
+    }
+  }, [props.calenderValue, fanData, submersibleData])
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
       backgroundColor: theme.palette.common.black,
-      color: theme.palette.common.white,
+      color: theme.palette.success.light,
     },
     [`&.${tableCellClasses.body}`]: {
       fontSize: 14,
@@ -39,7 +122,7 @@ const DailyActivities = () => {
 
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     '&:nth-of-type(odd)': {
-      backgroundColor: theme.palette.action.hover,
+      backgroundColor: '#b9dcee',
     },
     // hide last border
     '&:last-child td, &:last-child th': {
@@ -47,42 +130,123 @@ const DailyActivities = () => {
     },
   }))
 
-  const rows = [
-    createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-    createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-    createData('Eclair', 262, 16.0, 24, 6.0),
-    createData('Cupcake', 305, 3.7, 67, 4.3),
-    createData('Gingerbread', 356, 16.0, 49, 3.9),
-  ]
   return (
-    <AccordianComponent heading='Daily Activities'>
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 700 }} aria-label='customized table'>
-          <TableHead>
-            <TableRow>
-              <StyledTableCell>Dessert (100g serving)</StyledTableCell>
-              <StyledTableCell align='right'>Calories</StyledTableCell>
-              <StyledTableCell align='right'>Fat&nbsp;(g)</StyledTableCell>
-              <StyledTableCell align='right'>Carbs&nbsp;(g)</StyledTableCell>
-              <StyledTableCell align='right'>Protein&nbsp;(g)</StyledTableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.map((row) => (
-              <StyledTableRow key={row.name}>
-                <StyledTableCell component='th' scope='row'>
-                  {row.name}
-                </StyledTableCell>
-                <StyledTableCell align='right'>{row.calories}</StyledTableCell>
-                <StyledTableCell align='right'>{row.fat}</StyledTableCell>
-                <StyledTableCell align='right'>{row.carbs}</StyledTableCell>
-                <StyledTableCell align='right'>{row.protein}</StyledTableCell>
-              </StyledTableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </AccordianComponent>
+    <>
+      <AccordianComponent heading='Daily Activities'>
+        <div>
+          <FormControl
+            className='formButton'
+            variant='standard'
+            sx={{ m: 1, minWidth: 120 }}
+          >
+            <Select
+              labelId='demo-simple-select-standard-label'
+              id='demo-simple-select-standard'
+              value={category}
+              label='Category'
+              onChange={handleChange}
+            >
+              <MenuItem value={'fan'}>Fan</MenuItem>
+              <MenuItem value={'submersible'}>Submersible</MenuItem>
+            </Select>
+          </FormControl>
+        </div>
+
+        {category === 'fan' && (
+          <TableContainer sx={{ maxHeight: 350 }}>
+            <Table stickyHeader aria-label='sticky table'>
+              <TableHead>
+                <TableRow>
+                  {MicsData.comodityColumn.map((cl, i) => (
+                    <StyledTableCell
+                      key={'cl' + i}
+                      align={cl.align}
+                      style={{ minWidth: cl.minWidth }}
+                    >
+                      {cl.label}
+                    </StyledTableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {formattedFanData
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row) => {
+                    return (
+                      <StyledTableRow
+                        hover
+                        role='checkbox'
+                        tabIndex={-1}
+                        key={row.code}
+                      >
+                        <TableCell>{row.client}</TableCell>
+                        <TableCell>{row.quantity}</TableCell>
+                        <TableCell>{row.rotorSize}</TableCell>
+                        <TableCell>
+                          {moment(row.date).format('MMMM Do YYYY, h:mm a')}
+                        </TableCell>
+                      </StyledTableRow>
+                    )
+                  })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
+        {category === 'submersible' && (
+          <TableContainer sx={{ maxHeight: 350 }}>
+            <Table stickyHeader aria-label='sticky table'>
+              <TableHead>
+                <TableRow>
+                  {MicsData.comodityColumn.map((cl, i) => (
+                    <StyledTableCell
+                      key={'cl' + i}
+                      align={cl.align}
+                      style={{ minWidth: cl.minWidth }}
+                    >
+                      {cl.label}
+                    </StyledTableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {formattedSubData
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row) => {
+                    return (
+                      <StyledTableRow
+                        hover
+                        role='checkbox'
+                        tabIndex={-1}
+                        key={row.code}
+                      >
+                        <TableCell>{row.client}</TableCell>
+                        <TableCell>{row.quantity}</TableCell>
+                        <TableCell>{row.rotorSize}</TableCell>
+                        <TableCell>
+                          {moment(row.date).format('MMMM Do YYYY, h:mm a')}
+                        </TableCell>
+                      </StyledTableRow>
+                    )
+                  })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 30]}
+          component='div'
+          count={
+            category === 'fan'
+              ? formattedFanData.length
+              : formattedSubData.length
+          }
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      </AccordianComponent>
+    </>
   )
 }
 

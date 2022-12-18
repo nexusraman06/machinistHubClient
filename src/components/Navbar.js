@@ -36,7 +36,7 @@ const Navbar = () => {
             </Grid>
             <Grid>
               <Tabs
-                value={value}
+             
                 onChange={(e, val) => setValue(val)}
                 textColor='inherit'
                 indicatorColor='secondary'

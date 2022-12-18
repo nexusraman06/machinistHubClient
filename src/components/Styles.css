@@ -26,3 +26,14 @@
 .reportMargin{
  margin-bottom: 20px;
 }
+
+.tableB{
+  overflow: auto;
+  height: 200px;
+}
+
+.NoData{
+  font-weight: 600;
+text-align: center;
+width: 100%;
+}
