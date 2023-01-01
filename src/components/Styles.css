@@ -4,7 +4,8 @@
 }
 
 .formButton{
-   float:right
+   float:right;
+display:'flex'
 
 }
 .clientCard{

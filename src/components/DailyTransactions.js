@@ -6,7 +6,6 @@ import TableCell, { tableCellClasses } from '@mui/material/TableCell'
 import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
-import Paper from '@mui/material/Paper'
 import axios from 'axios'
 import moment from 'moment'
 import AccordianComponent from './Utils/AccordianComponent'
@@ -15,6 +14,7 @@ import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import TablePagination from '@mui/material/TablePagination'
 import MicsData from './MicsData'
+
 const DailyTransactions = (props) => {
   const [page, setPage] = React.useState(0)
   const [rowsPerPage, setRowsPerPage] = React.useState(10)
@@ -56,6 +56,8 @@ const DailyTransactions = (props) => {
 
   //Filter Expenses and Income based on calender
   useEffect(() => {
+    setFormattedIncome([])
+    setFormattedExpenses([])
     let backwardDate = new Date()
     if (props.calenderValue === 'weekly') {
       backwardDate.setDate(backwardDate.getDate() - 7)
@@ -66,10 +68,11 @@ const DailyTransactions = (props) => {
 
     let incomeArr = []
     let expenseArr = []
+
+    //Daily Filter
+    //Income
     if (props.calenderValue === 'daily') {
       for (let i = 0; i < income.length; i++) {
-        console.log(new Date().toLocaleDateString())
-        console.log(new Date(income[i].date).toLocaleDateString())
         if (
           new Date().toLocaleDateString() ===
           new Date(income[i].date).toLocaleDateString()
@@ -78,9 +81,9 @@ const DailyTransactions = (props) => {
           setFormattedIncome(incomeArr)
         }
       }
+      //Daily Filter
+      //Expense
       for (let i = 0; i < expense.length; i++) {
-        console.log(new Date().toLocaleDateString())
-        console.log(new Date(expense[i].date).toLocaleDateString())
         if (
           new Date().toLocaleDateString() ===
           new Date(expense[i].date).toLocaleDateString()
@@ -89,6 +92,7 @@ const DailyTransactions = (props) => {
           setFormattedExpenses(expenseArr)
         }
       }
+      //Custom Filter
     } else if (
       props.calenderValue === 'weekly' ||
       props.calenderValue === 'monthly'
@@ -111,8 +115,30 @@ const DailyTransactions = (props) => {
           setFormattedExpenses(expenseArr)
         }
       }
+    } else if (props.customDates[0] || props.customDates[1]) {
+      console.log('bl')
+      for (let i = 0; i < income.length; i++) {
+        console.log(new Date(income[i].date).getTime(), props.customDates[0])
+        if (
+          new Date(income[i].date).getTime() >= props.customDates[0] &&
+          new Date(income[i].date).getTime() <= props.customDates[1]
+        ) {
+          console.log('bp')
+          incomeArr.push(income[i])
+          setFormattedIncome(incomeArr)
+        }
+      }
+      for (let i = 0; i < expense.length; i++) {
+        if (
+          new Date(expense[i].date).getTime() >= props.customDates[0] &&
+          new Date(expense[i].date).getTime() <= props.customDates[1]
+        ) {
+          expenseArr.push(expense[i])
+          setFormattedExpenses(expenseArr)
+        }
+      }
     }
-  }, [props.calenderValue, expense, income])
+  }, [props.calenderValue, expense, income, props.customDates])
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -183,7 +209,9 @@ const DailyTransactions = (props) => {
                       <TableCell>{row.payee}</TableCell>
                       <TableCell>{row.amount}</TableCell>
                       <TableCell>{row.reason}</TableCell>
-                      <TableCell>{moment(row.date).format('MMMM Do YYYY, h:mm a')}</TableCell>
+                      <TableCell>
+                        {moment(row.date).format('MMMM Do YYYY, h:mm a')}
+                      </TableCell>
                       <TableCell>{row.medium}</TableCell>
                     </StyledTableRow>
                   )
@@ -222,7 +250,9 @@ const DailyTransactions = (props) => {
                       <TableCell>{row.client}</TableCell>
                       <TableCell>{row.amount}</TableCell>
                       <TableCell>{row.reason}</TableCell>
-                      <TableCell>{moment(row.date).format('MMMM Do YYYY, h:mm a')}</TableCell>
+                      <TableCell>
+                        {moment(row.date).format('MMMM Do YYYY, h:mm a')}
+                      </TableCell>
                       <TableCell>{row.medium}</TableCell>
                     </StyledTableRow>
                   )

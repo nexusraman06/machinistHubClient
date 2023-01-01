@@ -62,9 +62,9 @@ const DailyActivities = (props) => {
     let incomeArr = []
     let expenseArr = []
     if (props.calenderValue === 'daily') {
+      setFormattedSubData([])
+      setFormattedFanData([])
       for (let i = 0; i < fanData.length; i++) {
-        console.log(new Date().toLocaleDateString())
-        console.log(new Date(fanData[i].date).toLocaleDateString())
         if (
           new Date().toLocaleDateString() ===
           new Date(fanData[i].date).toLocaleDateString()
@@ -74,8 +74,6 @@ const DailyActivities = (props) => {
         }
       }
       for (let i = 0; i < submersibleData.length; i++) {
-        console.log(new Date().toLocaleDateString())
-        console.log(new Date(submersibleData[i].date).toLocaleDateString())
         if (
           new Date().toLocaleDateString() ===
           new Date(submersibleData[i].date).toLocaleDateString()
