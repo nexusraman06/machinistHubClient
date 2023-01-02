@@ -51,6 +51,8 @@ const DailyActivities = (props) => {
   }, [category])
 
   useEffect(() => {
+    setFormattedFanData([])
+    setFormattedSubData([])
     let backwardDate = new Date()
     if (props.calenderValue === 'weekly') {
       backwardDate.setDate(backwardDate.getDate() - 7)
@@ -59,8 +61,8 @@ const DailyActivities = (props) => {
       backwardDate.setDate(backwardDate.getDate() - 30)
     }
 
-    let incomeArr = []
-    let expenseArr = []
+    let subArr = []
+    let fanArr = []
     if (props.calenderValue === 'daily') {
       setFormattedSubData([])
       setFormattedFanData([])
@@ -69,8 +71,8 @@ const DailyActivities = (props) => {
           new Date().toLocaleDateString() ===
           new Date(fanData[i].date).toLocaleDateString()
         ) {
-          incomeArr.push(fanData[i])
-          setFormattedFanData(incomeArr)
+          fanArr.push(fanData[i])
+          setFormattedFanData(fanArr)
         }
       }
       for (let i = 0; i < submersibleData.length; i++) {
@@ -78,8 +80,8 @@ const DailyActivities = (props) => {
           new Date().toLocaleDateString() ===
           new Date(submersibleData[i].date).toLocaleDateString()
         ) {
-          expenseArr.push(submersibleData[i])
-          setFormattedSubData(expenseArr)
+          subArr.push(submersibleData[i])
+          setFormattedSubData(subArr)
         }
       }
     } else if (
@@ -91,8 +93,8 @@ const DailyActivities = (props) => {
           new Date(fanData[i].date).getTime() >= backwardDate.getTime() &&
           new Date(fanData[i].date).getTime() <= Date.now()
         ) {
-          incomeArr.push(fanData[i])
-          setFormattedFanData(incomeArr)
+          fanArr.push(fanData[i])
+          setFormattedFanData(fanArr)
         }
       }
       for (let i = 0; i < submersibleData.length; i++) {
@@ -101,12 +103,32 @@ const DailyActivities = (props) => {
             backwardDate.getTime() &&
           new Date(submersibleData[i].date).getTime() <= Date.now()
         ) {
-          expenseArr.push(submersibleData[i])
-          setFormattedSubData(expenseArr)
+          subArr.push(submersibleData[i])
+          setFormattedSubData(subArr)
+        }
+      }
+    } else if (props.customDates[0] || props.customDates[1]) {
+      for (let i = 0; i < submersibleData.length; i++) {
+
+        if (
+          new Date(submersibleData[i].date).getTime() >= props.customDates[0] &&
+          new Date(submersibleData[i].date).getTime() <= props.customDates[1]
+        ) {
+          subArr.push(submersibleData[i])
+          setFormattedSubData(subArr)
+        }
+      }
+      for (let i = 0; i < fanData.length; i++) {
+        if (
+          new Date(fanData[i].date).getTime() >= props.customDates[0] &&
+          new Date(fanData[i].date).getTime() <= props.customDates[1]
+        ) {
+          fanArr.push(fanData[i])
+          setFormattedFanData(fanArr)
         }
       }
     }
-  }, [props.calenderValue, fanData, submersibleData])
+  }, [props.calenderValue, fanData, submersibleData, props.customDates])
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {

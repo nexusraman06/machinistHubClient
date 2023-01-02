@@ -206,6 +206,16 @@ const DataEntry = () => {
                 onChange={handleQuantitySelect}
               />
             </Grid>
+                <Grid item xs={12} sm={6} md={4} lg={12 / 5}>
+              <TextField
+                required
+                id='standard-required'
+                label='Quantity'
+                variant='standard'
+                value={quantity}
+                onChange={handleQuantitySelect}
+              />
+            </Grid>
             <Grid item xs={12} sm={6} md={4} lg={12 / 5}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker

@@ -1,53 +1,37 @@
 import React, { useState, useEffect } from 'react'
-import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
 import axios from 'axios'
 import '../Styles.css'
 
-const OverviewCard = () => {
-  const [income, setIncome] = useState(0)
-  const [expense, setExpenses] = useState(0)
-  const [pnl, setPnl] = useState(0)
-
-  useEffect(() => {
-    axios.get(`/totalExpense`).then((res) => {
-      setExpenses(res.data)
-    })
-
-    axios.get(`/totalIncome`).then((res) => {
-      setIncome(res.data)
-    })
-
-    setPnl(income - expense)
-  }, [])
+const CardComponent = (props) => {
   return (
     <Card>
       <CardContent className='dashboardCard'>
         <div className='baseFlex'>
           <Typography sx={{ fontSize: 15 }} color='text.secondary' gutterBottom>
-            Total Income
+            {props.FirstTitle}
           </Typography>
           <Typography sx={{ fontSize: 15 }} color='text.primary' gutterBottom>
-            {income}
+            {props.FirstValue}
           </Typography>
         </div>
         <div className='baseFlex'>
           <Typography sx={{ fontSize: 15 }} color='text.secondary' gutterBottom>
-            Total Expense
+            {props.SecondTitle}
           </Typography>
           <Typography sx={{ fontSize: 15 }} color='text.primary' gutterBottom>
-            {expense}
+            {props.SecondValue}
           </Typography>
         </div>
 
         <div className='baseFlex'>
           <Typography sx={{ fontSize: 15 }} color='text.secondary' gutterBottom>
-            Total
+            {props.ThirdTitle}
           </Typography>
           <Typography sx={{ fontSize: 15 }} color='text.primary' gutterBottom>
-            {pnl}
+            {props.ThirdValue}
           </Typography>
         </div>
       </CardContent>
@@ -55,4 +39,4 @@ const OverviewCard = () => {
   )
 }
 
-export default OverviewCard
+export default CardComponent

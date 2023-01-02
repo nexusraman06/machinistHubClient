@@ -24,9 +24,6 @@ display:'flex'
   width:  150px;
 }
 
-.reportMargin{
- margin-bottom: 20px;
-}
 
 .tableB{
   overflow: auto;
@@ -37,4 +34,8 @@ display:'flex'
   font-weight: 600;
 text-align: center;
 width: 100%;
+}
+
+.MarginTop{
+  margin-top:20px
 }

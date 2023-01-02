@@ -116,14 +116,14 @@ const DailyTransactions = (props) => {
         }
       }
     } else if (props.customDates[0] || props.customDates[1]) {
-      console.log('bl')
+   
       for (let i = 0; i < income.length; i++) {
         console.log(new Date(income[i].date).getTime(), props.customDates[0])
         if (
           new Date(income[i].date).getTime() >= props.customDates[0] &&
           new Date(income[i].date).getTime() <= props.customDates[1]
         ) {
-          console.log('bp')
+      
           incomeArr.push(income[i])
           setFormattedIncome(incomeArr)
         }

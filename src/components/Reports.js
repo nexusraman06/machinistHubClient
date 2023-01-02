@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import DailyActivities from './DailyActivities'
 import DailyTransactions from './DailyTransactions'
-import OverviewCard from './Utils/OverviewCard'
+import ExpenseOverviewCard from './Cards/ExpenseOverviewCard'
+import ActivitiesOverviewCard from './Cards/ActivitiesOverviewCard'
+
 import Layout from './Layout'
 import './Styles.css'
 import Select from '@mui/material/Select'
@@ -37,7 +39,6 @@ const Reports = () => {
   useEffect(() => {
     const backwardDate = new Date()
     if (calender === 'custom') {
-
       setFormattedFromDate(fromValue)
       setFormattedToDate(toValue)
     } else if (calender === 'daily') {
@@ -125,10 +126,15 @@ const Reports = () => {
           </Box>
         </Box>
 
-        <OverviewCard
+        <ExpenseOverviewCard
           calenderValue={calender}
           customDates={[fromValue, toValue]}
-          className='reportMargin'
+        
+        />
+        <ActivitiesOverviewCard
+          calenderValue={calender}
+          customDates={[fromValue, toValue]}
+    
         />
       </Box>
 

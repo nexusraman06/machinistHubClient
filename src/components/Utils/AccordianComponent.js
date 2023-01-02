@@ -8,7 +8,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 const AccordianComponent = (props) => {
   return (
     <div>
-      <Accordion defaultExpanded>
+      <Accordion className='MarginTop' defaultExpanded>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls='panel1a-content'
