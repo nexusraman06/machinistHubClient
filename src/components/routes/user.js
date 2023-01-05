@@ -1,27 +1,23 @@
 import React from 'react'
-import { Route, Switch, HashRouter } from "react-router-dom";
+import { Route, Routes, HashRouter } from 'react-router-dom'
 import Dashboard from '../Dashboard'
 import Clients from '../Clients'
-import InputForm from '../InputForm'
+import Navbar from '../Navbar'
+import InputForm from '../Forms/InputForm'
+import Reports from '../Reports/Reports'
 
-const user = () => {
+const User = () => {
   return (
-    <HashRouter>
-      <div>
-        <Switch>
-          <Route path="/dashboard">
-            <Dashboard />
-          </Route>
-          <Route path="/sites">
-            <Clients />
-          </Route>
-          <Route path="/createSite">
-            <InputForm />
-          </Route>
-        </Switch>
-    </div>
-  </HashRouter>
+    <>
+      <Navbar></Navbar>
+      <Routes>
+        <Route path='/' element={<Dashboard />} />
+        <Route path='/create' element={<InputForm />} />
+        <Route path='/clients' element={<Clients />} />
+        <Route path='/reports' element={<Reports />} />
+      </Routes>
+    </>
   )
 }
 
-export default user
+export default User

@@ -1,29 +1,31 @@
 import React, { useEffect } from 'react'
-import Layout from './Layout'
+import Layout from '../Layout'
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
-
+import { InputLabel } from '@mui/material'
+import Button from '@mui/material/Button'
+import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
+import ButtonComponent from '../Utils/ButtonComponent'
+import swal from 'sweetalert'
 import axios from 'axios'
-import { InputLabel } from '@mui/material'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
-import swal from 'sweetalert'
-import ButtonComponent from './Utils/ButtonComponent'
 import Grid from '@mui/material/Grid'
-const DataEntry = () => {
-  const [category, setCategory] = React.useState('submersible')
+
+const ExpenseTracker = () => {
+  const [category, setCategory] = React.useState('expense')
+  const [date, setDate] = React.useState(Date.now())
   const [client, setClient] = React.useState([])
   const [selectedClient, setSelectedClient] = React.useState('')
-  const [selectedRotorSize, setSelectedRotorSize] = React.useState('')
-  const [quantity, setQuantity] = React.useState([])
-  const [rotorSize, setRotorSize] = React.useState([])
-  const [selectedFanRotorSize, setSelectedFanRotorSize] = React.useState('')
-  const [selectedShaftSize, setSelectedShaftSize] = React.useState('')
-  const [date, setDate] = React.useState(Date.now())
+  const [selectedReason, setSelectedReason] = React.useState('')
+  const [selectedPayee, setSelectedPayee] = React.useState('')
+  const [selectedAmount, setSelectedAmount] = React.useState()
+  const [selectedMedium, setSelectedMedium] = React.useState('')
+
   const handleChange = (event) => {
     setCategory(event.target.value)
   }
@@ -31,50 +33,53 @@ const DataEntry = () => {
   const handleChangeSelect = (event) => {
     setSelectedClient(event.target.value)
   }
-  const handleRotorSizeSelect = (event) => {
-    setSelectedRotorSize(event.target.value)
+
+  const handleReason = (event) => {
+    setSelectedReason(event.target.value)
   }
 
-  const handleQuantitySelect = (event) => {
-    setQuantity(event.target.value)
+  const handleAmount = (event) => {
+    setSelectedAmount(event.target.value)
   }
 
-  const handleFanShaft = (event) => {
-    setSelectedShaftSize(event.target.value)
+  const handlePayee = (event) => {
+    setSelectedPayee(event.target.value)
   }
 
-  const handleFanRotorSize = (event) => {
-    setSelectedFanRotorSize(event.target.value)
+  const handleMedium = (event) => {
+    setSelectedMedium(event.target.value)
   }
   const handleCancel = (event) => {
-    setQuantity(0)
+    setSelectedPayee('')
+    setSelectedAmount(0)
+    setSelectedReason('')
     setSelectedClient('')
-    setSelectedRotorSize('')
-    setSelectedShaftSize('')
-    setSelectedFanRotorSize('')
+    setSelectedMedium('')
   }
 
   const handleSubmit = async () => {
-    let fanBody = {
-      client: selectedClient,
-      rotorSize: selectedFanRotorSize,
-      shaftSize: selectedShaftSize,
-      quantity: quantity,
+    let expenseBody = {
+      payee: selectedPayee,
+      reason: selectedReason,
+      amount: selectedAmount,
       date: new Date(date),
+      medium: selectedMedium,
     }
-    let submersibleBody = {
+    let incomeBody = {
       client: selectedClient,
-      rotorSize: selectedRotorSize,
-      quantity: quantity,
+      reason: selectedReason,
+      amount: selectedAmount,
       date: new Date(date),
+      medium: selectedMedium,
     }
     let response = ''
+
     try {
-      if (category === 'submersible') {
-        response = await axios.post('/submersible', submersibleBody)
+      if (category === 'expense') {
+        response = await axios.post('/expense', expenseBody)
       }
-      if (category === 'fan') {
-        response = await axios.post('/fan', fanBody)
+      if (category === 'income') {
+        response = await axios.post('/income', incomeBody)
       }
       swal({
         title: 'Success!',
@@ -87,7 +92,7 @@ const DataEntry = () => {
       if (e.message.includes('status')) {
         swal({
           title: 'Error!',
-          text: 'User Aleardy Exist',
+          text: 'Data exist',
           icon: 'error',
           button: 'OK!',
         })
@@ -103,28 +108,30 @@ const DataEntry = () => {
     }
   }
 
-  const fanItems = {
-    fanRotor: ["6'", "7'", '1"', '1.25"', "6' kit", '1" kit', '1.25 kit'],
-    fanShaft: [
-      'Farata Relxo',
-      'Farata Goltu',
-      'CK Goltu',
-      'CK Relxo',
-      'ABC',
-      'Dhokha',
-    ],
-  }
-
   useEffect(() => {
     axios.get(`/client`).then((res) => {
       setClient(res.data)
     })
-    axios.get(`/submersibleChart`).then((res) => {
-      setRotorSize(res.data)
-    })
   }, [])
+
+  const reasons = {
+    expenseReasons: [
+      'Labour Cost',
+      'Oil',
+      'Hardware',
+      'Electricity',
+      'Maintenence',
+      'Mics',
+    ],
+    incomeReasons: [
+      'Fan Payment',
+      'Submersible Payment',
+      'Scrap Payment',
+      'Mics',
+    ],
+  }
   return (
-    <Layout title='Data Entry'>
+    <Layout title='Expense Tracker'>
       <div>
         <FormControl
           className='formButton'
@@ -138,12 +145,12 @@ const DataEntry = () => {
             label='Category'
             onChange={handleChange}
           >
-            <MenuItem value={'fan'}>Fan</MenuItem>
-            <MenuItem value={'submersible'}>Submersible</MenuItem>
+            <MenuItem value={'expense'}>Expense</MenuItem>
+            <MenuItem value={'income'}>Income</MenuItem>
           </Select>
         </FormControl>
       </div>
-      {category === 'fan' && (
+      {category === 'income' && (
         <Box>
           <Grid
             container
@@ -162,36 +169,22 @@ const DataEntry = () => {
               <FormControl variant='standard' sx={{ m: 1, minWidth: 120 }}>
                 <InputLabel id='test-select-label'>Client</InputLabel>
                 <Select value={selectedClient} onChange={handleChangeSelect}>
-                  {client.map(
-                    (cl, i) =>
-                      cl.category === category && (
-                        <MenuItem key={'cl' + i} value={cl.name}>
-                          {cl.name}
-                        </MenuItem>
-                      )
-                  )}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6} md={4} lg={12 / 5}>
-              <FormControl variant='standard' sx={{ m: 1, minWidth: 120 }}>
-                <InputLabel id='test-select-label'>Rotor Size</InputLabel>
-                <Select
-                  value={selectedFanRotorSize}
-                  onChange={handleFanRotorSize}
-                >
-                  {fanItems.fanRotor.map((item) => (
-                    <MenuItem value={item}>{item}</MenuItem>
+                  {client.map((cl, i) => (
+                    <MenuItem key={'clentsExpense' + i} value={cl.name}>
+                      {cl.name}
+                    </MenuItem>
                   ))}
                 </Select>
               </FormControl>
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={12 / 5}>
               <FormControl variant='standard' sx={{ m: 1, minWidth: 120 }}>
-                <InputLabel id='test-select-label'>Shaft Size</InputLabel>
-                <Select value={selectedShaftSize} onChange={handleFanShaft}>
-                  {fanItems.fanShaft.map((item) => (
-                    <MenuItem value={item}>{item}</MenuItem>
+                <InputLabel id='test-select-label'>Reason</InputLabel>
+                <Select value={selectedReason} onChange={handleReason}>
+                  {reasons.incomeReasons.map((item, i) => (
+                    <MenuItem key={'incomeReasons' + i} value={item}>
+                      {item}
+                    </MenuItem>
                   ))}
                 </Select>
               </FormControl>
@@ -200,21 +193,20 @@ const DataEntry = () => {
               <TextField
                 required
                 id='standard-required'
-                label='Quantity'
+                label='Amount'
                 variant='standard'
-                value={quantity}
-                onChange={handleQuantitySelect}
+                value={selectedAmount}
+                onChange={handleAmount}
               />
             </Grid>
-                <Grid item xs={12} sm={6} md={4} lg={12 / 5}>
-              <TextField
-                required
-                id='standard-required'
-                label='Quantity'
-                variant='standard'
-                value={quantity}
-                onChange={handleQuantitySelect}
-              />
+            <Grid item xs={12} sm={6} md={4} lg={12 / 5}>
+              <FormControl variant='standard' sx={{ m: 1, minWidth: 120 }}>
+                <InputLabel id='test-select-label'>Medium</InputLabel>
+                <Select value={selectedMedium} onChange={handleMedium}>
+                  <MenuItem value={'Cash'}>Cash</MenuItem>
+                  <MenuItem value={'Transfer'}>Transfer</MenuItem>
+                </Select>
+              </FormControl>
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={12 / 5}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -229,6 +221,7 @@ const DataEntry = () => {
               </LocalizationProvider>
             </Grid>
           </Grid>
+
           <ButtonComponent
             submitLabel='Submit'
             cancelLabel='Cancel'
@@ -237,7 +230,7 @@ const DataEntry = () => {
           />
         </Box>
       )}
-      {category === 'submersible' && (
+      {category === 'expense' && (
         <Box>
           <Grid
             container
@@ -252,51 +245,52 @@ const DataEntry = () => {
             noValidate
             autoComplete='off'
           >
-            <Grid item xs={12} sm={6} md={4} lg={3}>
-              <FormControl variant='standard' sx={{ m: 1, minWidth: 120 }}>
-                <InputLabel id='test-select-label'>Client</InputLabel>
-                <Select
-                  id='test-select-label'
-                  value={selectedClient}
-                  onChange={handleChangeSelect}
-                >
-                  {client.map(
-                    (cl, i) =>
-                      cl.category === category && (
-                        <MenuItem key={'cl' + i} value={cl.name}>
-                          {cl.name}
-                        </MenuItem>
-                      )
-                  )}
-                </Select>
-              </FormControl>
+            <Grid item xs={12} sm={6} md={4} lg={12 / 5}>
+              <TextField
+                required
+                id='standard-required'
+                label='Payee'
+                variant='standard'
+                value={selectedPayee}
+                onChange={handlePayee}
+              />
             </Grid>
-            <Grid item xs={12} sm={6} md={4} lg={3}>
+
+            <Grid item xs={12} sm={6} md={4} lg={12 / 5}>
               <FormControl variant='standard' sx={{ m: 1, minWidth: 120 }}>
-                <InputLabel id='test-select-label'>Size</InputLabel>
-                <Select
-                  value={selectedRotorSize}
-                  onChange={handleRotorSizeSelect}
-                >
-                  {rotorSize.map((rs, i) => (
-                    <MenuItem key={'rs' + i} value={rs.size}>
-                      {rs.size}
+                <InputLabel id='test-select-label'>Reason</InputLabel>
+                <Select value={selectedReason} onChange={handleReason}>
+                  {reasons.expenseReasons.map((item, i) => (
+                    <MenuItem key={'expenseReasons' + i} value={item}>
+                      {item}
                     </MenuItem>
                   ))}
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={6} md={4} lg={3}>
+
+            <Grid item xs={12} sm={6} md={4} lg={12 / 5}>
               <TextField
                 required
                 id='standard-required'
-                label='Quantity'
+                label='Amount'
                 variant='standard'
-                value={quantity}
-                onChange={handleQuantitySelect}
+                value={selectedAmount}
+                onChange={handleAmount}
               />
             </Grid>
-            <Grid item xs={12} sm={6} md={4} lg={3}>
+
+            <Grid item xs={12} sm={6} md={4} lg={12 / 5}>
+              <FormControl variant='standard' sx={{ m: 1, minWidth: 120 }}>
+                <InputLabel id='test-select-label'>Medium</InputLabel>
+                <Select value={selectedMedium} onChange={handleMedium}>
+                  <MenuItem value={'Cash'}>Cash</MenuItem>
+                  <MenuItem value={'Transfer'}>Transfer</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={12} sm={6} md={4} lg={12 / 5}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
                   label='Date'
@@ -309,6 +303,7 @@ const DataEntry = () => {
               </LocalizationProvider>
             </Grid>
           </Grid>
+
           <ButtonComponent
             submitLabel='Submit'
             cancelLabel='Cancel'
@@ -321,4 +316,4 @@ const DataEntry = () => {
   )
 }
 
-export default DataEntry
+export default ExpenseTracker

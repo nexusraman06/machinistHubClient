@@ -8,7 +8,7 @@ const OverviewCard = (props) => {
   const [submersible, setSubmersible] = useState([])
   const [totalSubmersible, setTotalSumbersible] = useState(0)
   const [totalFan, setTotalFan] = useState(0)
-  console.log(fan)
+
   useEffect(() => {
     axios.get(`/fan`).then((res) => {
       setFan(res.data)

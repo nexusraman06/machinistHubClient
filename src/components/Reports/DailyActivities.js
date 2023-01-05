@@ -6,15 +6,14 @@ import TableCell, { tableCellClasses } from '@mui/material/TableCell'
 import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
-import Paper from '@mui/material/Paper'
 import axios from 'axios'
-import AccordianComponent from './Utils/AccordianComponent'
+import AccordianComponent from '../Utils/AccordianComponent'
 import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import moment from 'moment'
 import TablePagination from '@mui/material/TablePagination'
-import MicsData from './MicsData'
+import MicsData from '../MicsData'
 const DailyActivities = (props) => {
   const [category, setCategory] = React.useState('submersible')
   const [page, setPage] = React.useState(0)
@@ -109,7 +108,6 @@ const DailyActivities = (props) => {
       }
     } else if (props.customDates[0] || props.customDates[1]) {
       for (let i = 0; i < submersibleData.length; i++) {
-
         if (
           new Date(submersibleData[i].date).getTime() >= props.customDates[0] &&
           new Date(submersibleData[i].date).getTime() <= props.customDates[1]
@@ -177,9 +175,9 @@ const DailyActivities = (props) => {
             <Table stickyHeader aria-label='sticky table'>
               <TableHead>
                 <TableRow>
-                  {MicsData.comodityColumn.map((cl, i) => (
+                  {MicsData.fanColumn.map((cl, i) => (
                     <StyledTableCell
-                      key={'cl' + i}
+                      key={'clFanMics' + i}
                       align={cl.align}
                       style={{ minWidth: cl.minWidth }}
                     >
@@ -198,9 +196,11 @@ const DailyActivities = (props) => {
                         role='checkbox'
                         tabIndex={-1}
                         key={row.code}
+                      
                       >
                         <TableCell>{row.client}</TableCell>
                         <TableCell>{row.quantity}</TableCell>
+                        <TableCell>{row.shaftSize}</TableCell>
                         <TableCell>{row.rotorSize}</TableCell>
                         <TableCell>
                           {moment(row.date).format('MMMM Do YYYY, h:mm a')}
@@ -217,9 +217,9 @@ const DailyActivities = (props) => {
             <Table stickyHeader aria-label='sticky table'>
               <TableHead>
                 <TableRow>
-                  {MicsData.comodityColumn.map((cl, i) => (
+                  {MicsData.submersibleColumn.map((cl, i) => (
                     <StyledTableCell
-                      key={'cl' + i}
+                      key={'clSubmersible' + i}
                       align={cl.align}
                       style={{ minWidth: cl.minWidth }}
                     >

@@ -8,12 +8,12 @@ import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import axios from 'axios'
 import moment from 'moment'
-import AccordianComponent from './Utils/AccordianComponent'
+import AccordianComponent from '../Utils/AccordianComponent'
 import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import TablePagination from '@mui/material/TablePagination'
-import MicsData from './MicsData'
+import MicsData from '../MicsData'
 
 const DailyTransactions = (props) => {
   const [page, setPage] = React.useState(0)
@@ -116,14 +116,12 @@ const DailyTransactions = (props) => {
         }
       }
     } else if (props.customDates[0] || props.customDates[1]) {
-   
       for (let i = 0; i < income.length; i++) {
         console.log(new Date(income[i].date).getTime(), props.customDates[0])
         if (
           new Date(income[i].date).getTime() >= props.customDates[0] &&
           new Date(income[i].date).getTime() <= props.customDates[1]
         ) {
-      
           incomeArr.push(income[i])
           setFormattedIncome(incomeArr)
         }
@@ -186,7 +184,7 @@ const DailyTransactions = (props) => {
               <TableRow>
                 {MicsData.expenseColumn.map((cl, i) => (
                   <StyledTableCell
-                    key={'cl' + i}
+                    key={'clExpenseMics' + i}
                     align={cl.align}
                     style={{ minWidth: cl.minWidth }}
                   >

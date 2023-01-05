@@ -2,12 +2,11 @@ import React, { useState, useEffect } from 'react'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
-import axios from 'axios'
 import '../Styles.css'
 
 const CardComponent = (props) => {
   return (
-    <Card>
+    <Card className='dashboardCardHeader'>
       <CardContent className='dashboardCard'>
         <div className='baseFlex'>
           <Typography sx={{ fontSize: 15 }} color='text.secondary' gutterBottom>

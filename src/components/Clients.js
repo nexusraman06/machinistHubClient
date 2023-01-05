@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Layout from './Layout'
 import axios from 'axios'
-import CardLayout from './CardLayout'
+import CardLayout from './Utils/CardLayout'
 import Grid from '@mui/material/Grid'
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
@@ -20,8 +20,6 @@ const Clients = () => {
   const handleChange = (event) => {
     setCategory(event.target.value)
   }
-
-  console.log(clients)
   return (
     <Layout title='Clients List'>
       <AccordianComponent heading='Client List'>
@@ -45,9 +43,9 @@ const Clients = () => {
           </FormControl>
         </div>
         <Grid container spacing={4}>
-          {clients.map((client) =>
+          {clients.map((client, i) =>
             category === client.category ? (
-              <Grid item xs={12} sm={6} md={4} lg={3}>
+              <Grid key={'cli' + i} item xs={12} sm={6} md={4} lg={3}>
                 <CardLayout
                   className='clientCard'
                   name={client.name}
@@ -57,7 +55,7 @@ const Clients = () => {
               </Grid>
             ) : (
               category === 'all' && (
-                <Grid item xs={12} sm={6} md={4} lg={3}>
+                <Grid key={'cli2' + i} item xs={12} sm={6} md={4} lg={3}>
                   <CardLayout
                     className='clientCard'
                     name={client.name}

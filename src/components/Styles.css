@@ -21,10 +21,12 @@ display:'flex'
 }
 
 .dashboardCard{
-  width:  150px;
+  width:  140px;
 }
 
-
+.dashboardCardHeader{
+  width:200px;
+}
 .tableB{
   overflow: auto;
   height: 200px;
@@ -38,4 +40,16 @@ width: 100%;
 
 .MarginTop{
   margin-top:20px
+}
+
+.drawer{
+  width:200px;
+}
+
+.drawerButton{
+  margin: 10px;
+}
+
+.DrawerList{
+  margin-left: 10px;
 }

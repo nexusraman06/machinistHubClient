@@ -8,16 +8,22 @@ import {
   Typography,
   useTheme,
   useMediaQuery,
+  Button,
 } from '@mui/material'
 import PrecisionManufacturingIcon from '@mui/icons-material/PrecisionManufacturing'
 import DrawerComponent from './DrawerComponent'
 import Utils from './Utils/MenuItems'
 import { Link } from 'react-router-dom'
-const Navbar = () => {
+import { useNavigate } from 'react-router-dom'
+const Navbar = (props) => {
+  let navigate = useNavigate()
   const theme = useTheme()
   const isMatch = useMediaQuery(theme.breakpoints.down('sm'))
-  const [value, setValue] = useState()
-
+  const [value, setValue] = useState(0)
+  const logoutHandler = () => {
+    localStorage.removeItem('authToken')
+    navigate('/login')
+  }
   return (
     <AppBar
       sx={{
@@ -36,10 +42,10 @@ const Navbar = () => {
             </Grid>
             <Grid>
               <Tabs
-             
                 onChange={(e, val) => setValue(val)}
                 textColor='inherit'
                 indicatorColor='secondary'
+                value={value}
               >
                 {Utils.MainMenu.map((item, i) => {
                   return (
@@ -63,6 +69,11 @@ const Navbar = () => {
             </Typography>
             <DrawerComponent />
           </>
+        )}
+        {!isMatch && (
+          <Button color='secondary' variant='contained' onClick={logoutHandler}>
+            Logout
+          </Button>
         )}
       </Toolbar>
     </AppBar>

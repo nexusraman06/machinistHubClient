@@ -1,22 +1,28 @@
 import './App.css'
-import InputForm from './components/InputForm'
+import InputForm from './components/Forms/InputForm'
 import Navbar from './components/Navbar'
-import { Route, Routes } from 'react-router-dom'
-import Dashboard from './components/Dashboard'
-import Clients from './components/Clients'
-import Reports from './components/Reports'
+import { Route, Routes, Router, Switch } from 'react-router-dom'
+import Login from './components/routes/Login'
+import PrivateRoute from './components/routes/PrivateRoute'
+import PrivateScreen from './components/routes/PrivateScreen'
 
 
 function App() {
+
+
   return (
     <div>
-      <Navbar></Navbar>
       <Routes>
-        <Route path='/' element={<Dashboard />} />
-        <Route path='/create' element={<InputForm />} />
-        <Route path='/clients' element={<Clients />} />
-        <Route path='/reports' element={<Reports />} />
-
+        <Route path='/login' element={<Login />} />
+        <Route
+          path='*'
+          element={
+            <PrivateRoute>
+              <PrivateScreen />
+            </PrivateRoute>
+          }
+        />
+     
       </Routes>
     </div>
   )

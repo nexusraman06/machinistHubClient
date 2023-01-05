@@ -15,7 +15,14 @@ const MicsData = {
     { label: 'Medium', minWidth: 200 },
   ],
 
-  comodityColumn: [
+  fanColumn: [
+    { label: 'Client', minWidth: 200 },
+    { label: 'Quantity', minWidth: 200 },
+    { label: 'Shaft Size', minWidth: 200 },
+    { label: 'Rotor Size', minWidth: 200 },
+    { label: 'Date', minWidth: 200 },
+  ],
+  submersibleColumn: [
     { label: 'Client', minWidth: 200 },
     { label: 'Quantity', minWidth: 200 },
     { label: 'Size', minWidth: 200 },

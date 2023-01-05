@@ -1,31 +1,33 @@
-
 const MenuItems = {
   MainMenu: [
     {
-      text: "Dashboard",
-   
-      path: "/",
-      SubMenu: null
+      text: 'Dashboard',
+      tabValue: 0,
+      path: '/',
+      SubMenu: null,
     },
     {
-      text: "Clients",
+      text: 'Clients',
+      tabValue: 1,
 
-      path: "/clients",
-      SubMenu: null
+      path: '/clients',
+      SubMenu: null,
     },
     {
-      text: "Input Form",
+      text: 'Input Form',
+      tabValue: 2,
 
-      path: "/create",
-      SubMenu: null
+      path: '/create',
+      SubMenu: null,
     },
     {
-      text: "Reports",
+      text: 'Reports',
+      tabValue: 3,
 
-      path: "/reports",
-      SubMenu: null
+      path: '/reports',
+      SubMenu: null,
     },
   ],
-};
+}
 
-export default MenuItems;
+export default MenuItems

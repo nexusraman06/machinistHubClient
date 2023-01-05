@@ -1,30 +1,29 @@
 import React, { useEffect } from 'react'
-import Layout from './Layout'
+import Layout from '../Layout'
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
-import { InputLabel } from '@mui/material'
-import Button from '@mui/material/Button'
-import Menu from '@mui/material/Menu'
+
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
-import ButtonComponent from './Utils/ButtonComponent'
-import swal from 'sweetalert'
 import axios from 'axios'
+import { InputLabel } from '@mui/material'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
+import swal from 'sweetalert'
+import ButtonComponent from '../Utils/ButtonComponent'
 import Grid from '@mui/material/Grid'
-
-const ExpenseTracker = () => {
-  const [category, setCategory] = React.useState('expense')
-  const [date, setDate] = React.useState(Date.now())
+const DataEntry = () => {
+  const [category, setCategory] = React.useState('submersible')
   const [client, setClient] = React.useState([])
   const [selectedClient, setSelectedClient] = React.useState('')
-  const [selectedReason, setSelectedReason] = React.useState('')
-  const [selectedPayee, setSelectedPayee] = React.useState('')
-  const [selectedAmount, setSelectedAmount] = React.useState()
-
+  const [selectedRotorSize, setSelectedRotorSize] = React.useState('')
+  const [quantity, setQuantity] = React.useState([])
+  const [rotorSize, setRotorSize] = React.useState([])
+  const [selectedFanRotorSize, setSelectedFanRotorSize] = React.useState('')
+  const [selectedShaftSize, setSelectedShaftSize] = React.useState('')
+  const [date, setDate] = React.useState(Date.now())
   const handleChange = (event) => {
     setCategory(event.target.value)
   }
@@ -32,47 +31,50 @@ const ExpenseTracker = () => {
   const handleChangeSelect = (event) => {
     setSelectedClient(event.target.value)
   }
-
-  const handleReason = (event) => {
-    setSelectedReason(event.target.value)
+  const handleRotorSizeSelect = (event) => {
+    setSelectedRotorSize(event.target.value)
   }
 
-  const handleAmount = (event) => {
-    setSelectedAmount(event.target.value)
+  const handleQuantitySelect = (event) => {
+    setQuantity(event.target.value)
   }
 
-  const handlePayee = (event) => {
-    setSelectedPayee(event.target.value)
+  const handleFanShaft = (event) => {
+    setSelectedShaftSize(event.target.value)
   }
 
+  const handleFanRotorSize = (event) => {
+    setSelectedFanRotorSize(event.target.value)
+  }
   const handleCancel = (event) => {
-    setSelectedPayee('')
-    setSelectedAmount(0)
-    setSelectedReason('')
+    setQuantity(0)
     setSelectedClient('')
+    setSelectedRotorSize('')
+    setSelectedShaftSize('')
+    setSelectedFanRotorSize('')
   }
 
   const handleSubmit = async () => {
-    let expenseBody = {
-      payee: selectedPayee,
-      reason: selectedReason,
-      amount: selectedAmount,
+    let fanBody = {
+      client: selectedClient,
+      rotorSize: selectedFanRotorSize,
+      shaftSize: selectedShaftSize,
+      quantity: quantity,
       date: new Date(date),
     }
-    let incomeBody = {
+    let submersibleBody = {
       client: selectedClient,
-      reason: selectedReason,
-      amount: selectedAmount,
+      rotorSize: selectedRotorSize,
+      quantity: quantity,
       date: new Date(date),
     }
     let response = ''
-
     try {
-      if (category === 'expense') {
-        response = await axios.post('/expense', expenseBody)
+      if (category === 'submersible') {
+        response = await axios.post('/submersible', submersibleBody)
       }
-      if (category === 'income') {
-        response = await axios.post('/income', incomeBody)
+      if (category === 'fan') {
+        response = await axios.post('/fan', fanBody)
       }
       swal({
         title: 'Success!',
@@ -85,7 +87,7 @@ const ExpenseTracker = () => {
       if (e.message.includes('status')) {
         swal({
           title: 'Error!',
-          text: 'Data exist',
+          text: 'User Aleardy Exist',
           icon: 'error',
           button: 'OK!',
         })
@@ -101,30 +103,28 @@ const ExpenseTracker = () => {
     }
   }
 
+  const fanItems = {
+    fanRotor: ["6'", "7'", '1"', '1.25"', "6' kit", '1" kit', '1.25 kit'],
+    fanShaft: [
+      'Farata Relxo',
+      'Farata Goltu',
+      'CK Goltu',
+      'CK Relxo',
+      'ABC',
+      'Dhokha',
+    ],
+  }
+
   useEffect(() => {
     axios.get(`/client`).then((res) => {
       setClient(res.data)
     })
+    axios.get(`/submersibleChart`).then((res) => {
+      setRotorSize(res.data)
+    })
   }, [])
-
-  const reasons = {
-    expenseReasons: [
-      'Labour Cost',
-      'Oil',
-      'Hardware',
-      'Electricity',
-      'Maintenence',
-      'Mics',
-    ],
-    incomeReasons: [
-      'Fan Payment',
-      'Submersible Payment',
-      'Scrap Payment',
-      'Mics',
-    ],
-  }
   return (
-    <Layout title='Expense Tracker'>
+    <Layout title='Data Entry'>
       <div>
         <FormControl
           className='formButton'
@@ -138,12 +138,101 @@ const ExpenseTracker = () => {
             label='Category'
             onChange={handleChange}
           >
-            <MenuItem value={'expense'}>Expense</MenuItem>
-            <MenuItem value={'income'}>Income</MenuItem>
+            <MenuItem value={'fan'}>Fan</MenuItem>
+            <MenuItem value={'submersible'}>Submersible</MenuItem>
           </Select>
         </FormControl>
       </div>
-      {category === 'income' && (
+      {category === 'fan' && (
+        <Box>
+          <Grid
+            container
+            display='flex'
+            justifyContent='space-around'
+            alignItems='end'
+            component='form'
+            sx={{
+              '& .MuiTextField-root': { m: 1, width: '25ch' },
+              mb: 3,
+            }}
+            noValidate
+            autoComplete='off'
+          >
+            <Grid item xs={12} sm={6} md={4} lg={12 / 5}>
+              <FormControl variant='standard' sx={{ m: 1, minWidth: 120 }}>
+                <InputLabel id='test-select-label'>Client</InputLabel>
+                <Select value={selectedClient} onChange={handleChangeSelect}>
+                  {client.map(
+                    (cl, i) =>
+                      cl.category === category && (
+                        <MenuItem key={'cl' + i} value={cl.name}>
+                          {cl.name}
+                        </MenuItem>
+                      )
+                  )}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4} lg={12 / 5}>
+              <FormControl variant='standard' sx={{ m: 1, minWidth: 120 }}>
+                <InputLabel id='test-select-label'>Rotor Size</InputLabel>
+                <Select
+                  value={selectedFanRotorSize}
+                  onChange={handleFanRotorSize}
+                >
+                  {fanItems.fanRotor.map((item, i) => (
+                    <MenuItem key={'fanRotor' + i} value={item}>
+                      {item}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4} lg={12 / 5}>
+              <FormControl variant='standard' sx={{ m: 1, minWidth: 120 }}>
+                <InputLabel id='test-select-label'>Shaft Size</InputLabel>
+                <Select value={selectedShaftSize} onChange={handleFanShaft}>
+                  {fanItems.fanShaft.map((item, i) => (
+                    <MenuItem key={'fanShaft' + i} value={item}>
+                      {item}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={12} sm={6} md={4} lg={12 / 5}>
+              <TextField
+                required
+                id='standard-required'
+                label='Quantity'
+                variant='standard'
+                value={quantity}
+                onChange={handleQuantitySelect}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={4} lg={12 / 5}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DatePicker
+                  label='Date'
+                  value={date}
+                  onChange={(newValue) => {
+                    setDate(newValue)
+                  }}
+                  renderInput={(params) => <TextField {...params} />}
+                />
+              </LocalizationProvider>
+            </Grid>
+          </Grid>
+          <ButtonComponent
+            submitLabel='Submit'
+            cancelLabel='Cancel'
+            submit={handleSubmit}
+            cancel={handleCancel}
+          />
+        </Box>
+      )}
+      {category === 'submersible' && (
         <Box>
           <Grid
             container
@@ -161,33 +250,45 @@ const ExpenseTracker = () => {
             <Grid item xs={12} sm={6} md={4} lg={3}>
               <FormControl variant='standard' sx={{ m: 1, minWidth: 120 }}>
                 <InputLabel id='test-select-label'>Client</InputLabel>
-                <Select value={selectedClient} onChange={handleChangeSelect}>
-                  {client.map((cl, i) => (
-                    <MenuItem key={'cl' + i} value={cl.name}>
-                      {cl.name}
+                <Select
+                  id='test-select-label'
+                  value={selectedClient}
+                  onChange={handleChangeSelect}
+                >
+                  {client.map(
+                    (cl, i) =>
+                      cl.category === category && (
+                        <MenuItem key={'client' + i} value={cl.name}>
+                          {cl.name}
+                        </MenuItem>
+                      )
+                  )}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4} lg={3}>
+              <FormControl variant='standard' sx={{ m: 1, minWidth: 120 }}>
+                <InputLabel id='test-select-label'>Size</InputLabel>
+                <Select
+                  value={selectedRotorSize}
+                  onChange={handleRotorSizeSelect}
+                >
+                  {rotorSize.map((rs, i) => (
+                    <MenuItem key={'rotorSize' + i} value={rs.size}>
+                      {rs.size}
                     </MenuItem>
                   ))}
                 </Select>
               </FormControl>
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-              <FormControl variant='standard' sx={{ m: 1, minWidth: 120 }}>
-                <InputLabel id='test-select-label'>Reason</InputLabel>
-                <Select value={selectedReason} onChange={handleReason}>
-                  {reasons.incomeReasons.map((item) => (
-                    <MenuItem value={item}>{item}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6} md={4} lg={3}>
               <TextField
                 required
                 id='standard-required'
-                label='Amount'
+                label='Quantity'
                 variant='standard'
-                value={selectedAmount}
-                onChange={handleAmount}
+                value={quantity}
+                onChange={handleQuantitySelect}
               />
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
@@ -203,77 +304,6 @@ const ExpenseTracker = () => {
               </LocalizationProvider>
             </Grid>
           </Grid>
-
-          <ButtonComponent
-            submitLabel='Submit'
-            cancelLabel='Cancel'
-            submit={handleSubmit}
-            cancel={handleCancel}
-          />
-        </Box>
-      )}
-      {category === 'expense' && (
-        <Box>
-          <Grid
-            container
-            display='flex'
-            justifyContent='space-around'
-            alignItems='end'
-            component='form'
-            sx={{
-              '& .MuiTextField-root': { m: 1, width: '25ch' },
-              mb: 3,
-            }}
-            noValidate
-            autoComplete='off'
-          >
-            <Grid item xs={12} sm={6} md={4} lg={3}>
-              <TextField
-                required
-                id='standard-required'
-                label='Payee'
-                variant='standard'
-                value={selectedPayee}
-                onChange={handlePayee}
-              />
-            </Grid>
-
-            <Grid item xs={12} sm={6} md={4} lg={3}>
-              <FormControl variant='standard' sx={{ m: 1, minWidth: 120 }}>
-                <InputLabel id='test-select-label'>Reason</InputLabel>
-                <Select value={selectedReason} onChange={handleReason}>
-                  {reasons.expenseReasons.map((item) => (
-                    <MenuItem value={item}>{item}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-
-            <Grid item xs={12} sm={6} md={4} lg={3}>
-              <TextField
-                required
-                id='standard-required'
-                label='Amount'
-                variant='standard'
-                value={selectedAmount}
-                onChange={handleAmount}
-              />
-            </Grid>
-
-            <Grid item xs={12} sm={6} md={4} lg={3}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker
-                  label='Date'
-                  value={date}
-                  onChange={(newValue) => {
-                    setDate(newValue)
-                  }}
-                  renderInput={(params) => <TextField {...params} />}
-                />
-              </LocalizationProvider>
-            </Grid>
-          </Grid>
-
           <ButtonComponent
             submitLabel='Submit'
             cancelLabel='Cancel'
@@ -286,4 +316,4 @@ const ExpenseTracker = () => {
   )
 }
 
-export default ExpenseTracker
+export default DataEntry
