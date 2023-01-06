@@ -48,7 +48,7 @@ const DataEntry = () => {
     }
     let response = ''
     try {
-      response = await axios.post('/fanRotor', fanRotorBody)
+      response = await axios.post(process.env.REACT_APP_BACKEND_LINK +'/fanRotor', fanRotorBody)
 
       swal({
         title: 'Success!',
@@ -82,7 +82,7 @@ const DataEntry = () => {
   }
 
   useEffect(() => {
-    axios.get(`/client`).then((res) => {
+    axios.get( process.env.REACT_APP_BACKEND_LINK +`/client`).then((res) => {
       setClient(res.data)
     })
   }, [])

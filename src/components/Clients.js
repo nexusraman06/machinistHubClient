@@ -11,7 +11,7 @@ const Clients = () => {
   const [clients, setClients] = useState([])
   const [category, setCategory] = React.useState('all')
   useEffect(() => {
-    axios.get(`/client`).then((res) => {
+    axios.get( process.env.REACT_APP_BACKEND_LINK +`/client`).then((res) => {
       const persons = res.data
       setClients(persons)
     })

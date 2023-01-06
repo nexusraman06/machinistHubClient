@@ -41,13 +41,13 @@ const DailyTransactions = (props) => {
   //Fetch Expense and Income Data
   useEffect(() => {
     if (category === 'expense') {
-      axios.get(`/expense`).then((res) => {
+      axios.get( process.env.REACT_APP_BACKEND_LINK +`/expense`).then((res) => {
         const expense = res.data
         setExpense(expense)
       })
     }
     if (category === 'income') {
-      axios.get(`/income`).then((res) => {
+      axios.get( process.env.REACT_APP_BACKEND_LINK +`/income`).then((res) => {
         const income = res.data
         setIncome(income)
       })

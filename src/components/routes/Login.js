@@ -7,15 +7,13 @@ import TextField from '@mui/material/TextField'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Checkbox from '@mui/material/Checkbox'
 import Link from '@mui/material/Link'
-import Grid from '@mui/material/Grid'
 import Box from '@mui/material/Box'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
 import Typography from '@mui/material/Typography'
-import Container from '@mui/material/Container'
-import { createTheme, ThemeProvider } from '@mui/material/styles'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
-
+import image from '../../Images/machine.jpg'
+import CircularProgress from '@mui/material/CircularProgress'
 function Copyright(props) {
   return (
     <Typography
@@ -34,13 +32,12 @@ function Copyright(props) {
   )
 }
 
-const theme = createTheme()
-
 const Login = () => {
   let navigate = useNavigate()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     if (localStorage.getItem('authToken')) {
@@ -49,6 +46,7 @@ const Login = () => {
   }, [navigate])
 
   const handleSubmit = async (event) => {
+    setLoading(true)
     event.preventDefault()
 
     const config = {
@@ -59,32 +57,38 @@ const Login = () => {
 
     try {
       const { data } = await axios.post(
-        '/auth/login',
+        process.env.REACT_APP_BACKEND_LINK + '/auth/login',
         { username, password },
         config
       )
+      while (!data) setLoading(true)
+
       localStorage.setItem('authToken', data.token)
       navigate('/')
     } catch (e) {
-  
       setError(e.message)
       setTimeout(() => {
         setError('')
       }, 5000)
     }
+    setLoading(false)
   }
 
+  console.log(loading)
   return (
-    <ThemeProvider theme={theme}>
-      <Container component='main' maxWidth='xs'>
-        <CssBaseline />
+    <div className='image'>
+      <Box
+        className='login'
+        display='flex'
+        alignItems='center'
+        justifyContent='center'
+      >
         <Box
-          sx={{
-            marginTop: 8,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
+          className='borderBox'
+          display='flex'
+          flexDirection='column'
+          alignItems='center'
+          marginTop='20'
         >
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
             <LockOutlinedIcon />
@@ -130,14 +134,28 @@ const Login = () => {
               type='submit'
               fullWidth
               variant='contained'
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ mt: 3, mb: 2, p:1.5 }}
             >
-              Log In
+              {!loading ? (
+                <>Log In</>
+              ) : (
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <CircularProgress size="1.5rem" color="inherit"/>
+                </Box>
+              )}
             </Button>
             <div>
               {error.includes('401') && <>Incorrect Credentials</>}
               {error.includes('400') && <>Please try again</>}
+              {error.includes('403') && <>Server Error. Try Again</>}
             </div>
+        
             {/* <Grid container>
               <Grid item xs>
                 <Link href='#' variant='body2'>
@@ -151,10 +169,10 @@ const Login = () => {
               </Grid>
             </Grid> */}
           </Box>
+          <Copyright sx={{ mt: 8, mb: 4 }} />
         </Box>
-        <Copyright sx={{ mt: 8, mb: 4 }} />
-      </Container>
-    </ThemeProvider>
+      </Box>
+    </div>
   )
 }
 

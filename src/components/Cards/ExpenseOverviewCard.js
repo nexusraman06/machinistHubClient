@@ -10,11 +10,11 @@ const OverviewCard = (props) => {
   const [totalIncome, setTotalIncome] = useState(0)
 
   useEffect(() => {
-    axios.get(`/totalExpense`).then((res) => {
+    axios.get( process.env.REACT_APP_BACKEND_LINK +`/totalExpense`).then((res) => {
       setExpenses(res.data)
     })
 
-    axios.get(`/totalIncome`).then((res) => {
+    axios.get( process.env.REACT_APP_BACKEND_LINK +`/totalIncome`).then((res) => {
       setIncome(res.data)
     })
   }, [])

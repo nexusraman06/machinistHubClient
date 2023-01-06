@@ -10,11 +10,11 @@ const OverviewCard = (props) => {
   const [totalFan, setTotalFan] = useState(0)
 
   useEffect(() => {
-    axios.get(`/fan`).then((res) => {
+    axios.get( process.env.REACT_APP_BACKEND_LINK +`/fan`).then((res) => {
       setFan(res.data)
     })
 
-    axios.get(`/submersible`).then((res) => {
+    axios.get( process.env.REACT_APP_BACKEND_LINK +`/submersible`).then((res) => {
       setSubmersible(res.data)
     })
   }, [])

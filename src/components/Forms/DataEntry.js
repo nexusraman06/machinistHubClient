@@ -71,10 +71,10 @@ const DataEntry = () => {
     let response = ''
     try {
       if (category === 'submersible') {
-        response = await axios.post('/submersible', submersibleBody)
+        response = await axios.post( process.env.REACT_APP_BACKEND_LINK +'/submersible', submersibleBody)
       }
       if (category === 'fan') {
-        response = await axios.post('/fan', fanBody)
+        response = await axios.post( process.env.REACT_APP_BACKEND_LINK +'/fan', fanBody)
       }
       swal({
         title: 'Success!',
@@ -116,10 +116,10 @@ const DataEntry = () => {
   }
 
   useEffect(() => {
-    axios.get(`/client`).then((res) => {
+    axios.get( process.env.REACT_APP_BACKEND_LINK +`/client`).then((res) => {
       setClient(res.data)
     })
-    axios.get(`/submersibleChart`).then((res) => {
+    axios.get( process.env.REACT_APP_BACKEND_LINK +`/submersibleChart`).then((res) => {
       setRotorSize(res.data)
     })
   }, [])

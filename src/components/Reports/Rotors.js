@@ -35,7 +35,7 @@ const DailyActivities = (props) => {
   }
 
   useEffect(() => {
-    axios.get(`/fanRotor`).then((res) => {
+    axios.get( process.env.REACT_APP_BACKEND_LINK +`/fanRotor`).then((res) => {
       setFanData(res.data)
     })
   })

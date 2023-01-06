@@ -76,10 +76,10 @@ const ExpenseTracker = () => {
 
     try {
       if (category === 'expense') {
-        response = await axios.post('/expense', expenseBody)
+        response = await axios.post( process.env.REACT_APP_BACKEND_LINK +'/expense', expenseBody)
       }
       if (category === 'income') {
-        response = await axios.post('/income', incomeBody)
+        response = await axios.post( process.env.REACT_APP_BACKEND_LINK +'/income', incomeBody)
       }
       swal({
         title: 'Success!',
@@ -109,7 +109,7 @@ const ExpenseTracker = () => {
   }
 
   useEffect(() => {
-    axios.get(`/client`).then((res) => {
+    axios.get( process.env.REACT_APP_BACKEND_LINK +`/client`).then((res) => {
       setClient(res.data)
     })
   }, [])

@@ -37,13 +37,13 @@ const DailyActivities = (props) => {
 
   useEffect(() => {
     if (category === 'submersible') {
-      axios.get(`/submersible`).then((res) => {
+      axios.get( process.env.REACT_APP_BACKEND_LINK +`/submersible`).then((res) => {
         setSubmersibleData(res.data)
       })
     }
 
     if (category === 'fan') {
-      axios.get(`/fan`).then((res) => {
+      axios.get( process.env.REACT_APP_BACKEND_LINK +`/fan`).then((res) => {
         setFanData(res.data)
       })
     }
