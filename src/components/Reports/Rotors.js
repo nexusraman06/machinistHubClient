@@ -14,13 +14,54 @@ import MenuItem from '@mui/material/MenuItem'
 import moment from 'moment'
 import TablePagination from '@mui/material/TablePagination'
 import MicsData from '../MicsData'
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
+import swal from 'sweetalert'
 const DailyActivities = (props) => {
   const [category, setCategory] = React.useState('submersible')
   const [page, setPage] = React.useState(0)
   const [rowsPerPage, setRowsPerPage] = React.useState(10)
   const [fanData, setFanData] = useState([])
   const [formattedFanData, setFormattedFanData] = useState([])
-  const [formattedSubData, setFormattedSubData] = useState([])
+  const [res, setRes] = useState('')
+  const onHandleDelete = async (_id, category) => {
+    setRes('')
+    let body = {
+      _id: _id,
+      category: category,
+    }
+    try {
+      const response = await axios.post(
+        process.env.REACT_APP_BACKEND_LINK + '/deleteFanRouter',
+        body
+      )
+      setRes(response)
+      swal({
+        title: 'Success!',
+        text: response.data.message,
+        icon: 'success',
+        button: 'OK!',
+        width: '100px',
+      })
+    } catch (e) {
+      if (e.message.includes('status')) {
+        swal({
+          title: 'Error!',
+          text: 'Data exist',
+          icon: 'error',
+          button: 'OK!',
+        })
+      }
+      if (e.message.includes('Network'))
+        swal({
+          title: 'Error!',
+          text: e.message,
+          icon: 'error',
+          button: 'OK!',
+          width: '100px',
+        })
+    }
+  }
+
   const handleChange = (event) => {
     setCategory(event.target.value)
   }
@@ -35,14 +76,14 @@ const DailyActivities = (props) => {
   }
 
   useEffect(() => {
-    axios.get( process.env.REACT_APP_BACKEND_LINK +`/fanRotor`).then((res) => {
+    axios.get(process.env.REACT_APP_BACKEND_LINK + `/fanRotor`).then((res) => {
       setFanData(res.data)
     })
   })
 
   useEffect(() => {
     setFormattedFanData([])
-    setFormattedSubData([])
+
     let backwardDate = new Date()
     if (props.calenderValue === 'weekly') {
       backwardDate.setDate(backwardDate.getDate() - 7)
@@ -51,10 +92,9 @@ const DailyActivities = (props) => {
       backwardDate.setDate(backwardDate.getDate() - 30)
     }
 
-    let subArr = []
     let fanArr = []
     if (props.calenderValue === 'daily') {
-      setFormattedSubData([])
+
       setFormattedFanData([])
       for (let i = 0; i < fanData.length; i++) {
         if (
@@ -145,6 +185,11 @@ const DailyActivities = (props) => {
                       <TableCell>{row.rotorSize}</TableCell>
                       <TableCell>
                         {moment(row.date).format('MMMM Do YYYY, h:mm a')}
+                      </TableCell>
+                      <TableCell>
+                        <DeleteForeverIcon
+                          onClick={() => onHandleDelete(row._id, category)}
+                        ></DeleteForeverIcon>
                       </TableCell>
                     </StyledTableRow>
                   )
