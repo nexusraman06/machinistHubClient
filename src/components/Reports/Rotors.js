@@ -31,7 +31,7 @@ const DailyActivities = (props) => {
     }
     try {
       const response = await axios.post(
-        process.env.REACT_APP_BACKEND_LINK + '/deleteFanRouter',
+        process.env.REACT_APP_BACKEND_LINK + '/deleteFanRotor',
         body
       )
       setRes(response)
