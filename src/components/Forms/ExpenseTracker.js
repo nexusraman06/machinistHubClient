@@ -17,6 +17,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import Grid from '@mui/material/Grid'
 
 const ExpenseTracker = () => {
+
   const [category, setCategory] = React.useState('expense')
   const [date, setDate] = React.useState(Date.now())
   const [client, setClient] = React.useState([])
@@ -24,7 +25,7 @@ const ExpenseTracker = () => {
   const [selectedReason, setSelectedReason] = React.useState('')
   const [selectedPayee, setSelectedPayee] = React.useState('')
   const [selectedAmount, setSelectedAmount] = React.useState()
-  const [selectedMedium, setSelectedMedium] = React.useState('')
+  const [selectedMedium, setSelectedMedium] = React.useState('Cash')
 
   const handleChange = (event) => {
     setCategory(event.target.value)

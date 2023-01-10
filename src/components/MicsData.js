@@ -5,6 +5,7 @@ const MicsData = {
     { label: 'Reason', minWidth: 200 },
     { label: 'Date', minWidth: 200 },
     { label: 'Medium', minWidth: 200 },
+    { label: 'Delete', minWidth: 100 },
   ],
 
   incomeColumn: [
@@ -13,6 +14,7 @@ const MicsData = {
     { label: 'Reason', minWidth: 200 },
     { label: 'Date', minWidth: 200 },
     { label: 'Medium', minWidth: 200 },
+    { label: 'Delete', minWidth: 100 },
   ],
 
   fanColumn: [
@@ -21,12 +23,14 @@ const MicsData = {
     { label: 'Shaft Size', minWidth: 200 },
     { label: 'Rotor Size', minWidth: 200 },
     { label: 'Date', minWidth: 200 },
+    { label: 'Delete', minWidth: 100 },
   ],
   submersibleColumn: [
     { label: 'Client', minWidth: 200 },
     { label: 'Quantity', minWidth: 200 },
     { label: 'Size', minWidth: 200 },
     { label: 'Date', minWidth: 200 },
+    { label: 'Delete', minWidth: 100 },
   ],
 }
 

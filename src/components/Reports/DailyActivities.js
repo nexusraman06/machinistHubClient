@@ -14,6 +14,8 @@ import MenuItem from '@mui/material/MenuItem'
 import moment from 'moment'
 import TablePagination from '@mui/material/TablePagination'
 import MicsData from '../MicsData'
+import swal from 'sweetalert'
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
 const DailyActivities = (props) => {
   const [category, setCategory] = React.useState('submersible')
   const [page, setPage] = React.useState(0)
@@ -22,6 +24,55 @@ const DailyActivities = (props) => {
   const [fanData, setFanData] = useState([])
   const [formattedFanData, setFormattedFanData] = useState([])
   const [formattedSubData, setFormattedSubData] = useState([])
+  const [res, setRes] = useState('')
+  const onHandleDelete = async (_id, category) => {
+    setRes('')
+    let body = {
+      _id: _id,
+      category: category,
+    }
+
+    let response = ''
+    try {
+      if (category === 'fan') {
+        response = await axios.post(
+          process.env.REACT_APP_BACKEND_LINK + '/deleteFan',
+          body
+        )
+      } else {
+        response = await axios.post(
+          process.env.REACT_APP_BACKEND_LINK + '/deleteSub',
+          body
+        )
+      }
+      setRes(response)
+
+      swal({
+        title: 'Success!',
+        text: response.data.message,
+        icon: 'success',
+        button: 'OK!',
+        width: '100px',
+      })
+    } catch (e) {
+      if (e.message.includes('status')) {
+        swal({
+          title: 'Error!',
+          text: 'Data exist',
+          icon: 'error',
+          button: 'OK!',
+        })
+      }
+      if (e.message.includes('Network'))
+        swal({
+          title: 'Error!',
+          text: e.message,
+          icon: 'error',
+          button: 'OK!',
+          width: '100px',
+        })
+    }
+  }
   const handleChange = (event) => {
     setCategory(event.target.value)
   }
@@ -37,17 +88,19 @@ const DailyActivities = (props) => {
 
   useEffect(() => {
     if (category === 'submersible') {
-      axios.get( process.env.REACT_APP_BACKEND_LINK +`/submersible`).then((res) => {
-        setSubmersibleData(res.data)
-      })
+      axios
+        .get(process.env.REACT_APP_BACKEND_LINK + `/submersible`)
+        .then((res) => {
+          setSubmersibleData(res.data)
+        })
     }
 
     if (category === 'fan') {
-      axios.get( process.env.REACT_APP_BACKEND_LINK +`/fan`).then((res) => {
+      axios.get(process.env.REACT_APP_BACKEND_LINK + `/fan`).then((res) => {
         setFanData(res.data)
       })
     }
-  }, [category])
+  }, [category, res])
 
   useEffect(() => {
     setFormattedFanData([])
@@ -196,7 +249,6 @@ const DailyActivities = (props) => {
                         role='checkbox'
                         tabIndex={-1}
                         key={row.code}
-                      
                       >
                         <TableCell>{row.client}</TableCell>
                         <TableCell>{row.quantity}</TableCell>
@@ -204,6 +256,11 @@ const DailyActivities = (props) => {
                         <TableCell>{row.rotorSize}</TableCell>
                         <TableCell>
                           {moment(row.date).format('MMMM Do YYYY, h:mm a')}
+                        </TableCell>
+                        <TableCell>
+                          <DeleteForeverIcon
+                            onClick={() => onHandleDelete(row._id, category)}
+                          ></DeleteForeverIcon>
                         </TableCell>
                       </StyledTableRow>
                     )
@@ -244,6 +301,11 @@ const DailyActivities = (props) => {
                         <TableCell>{row.rotorSize}</TableCell>
                         <TableCell>
                           {moment(row.date).format('MMMM Do YYYY, h:mm a')}
+                        </TableCell>
+                        <TableCell>
+                          <DeleteForeverIcon
+                            onClick={() => onHandleDelete(row._id, category)}
+                          ></DeleteForeverIcon>
                         </TableCell>
                       </StyledTableRow>
                     )

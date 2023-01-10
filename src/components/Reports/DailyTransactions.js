@@ -14,8 +14,13 @@ import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import TablePagination from '@mui/material/TablePagination'
 import MicsData from '../MicsData'
-
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
+import ModalComponent from '../Utils/ModelComponent'
+import swal from 'sweetalert'
 const DailyTransactions = (props) => {
+  const [open, setOpen] = React.useState(false)
+  const handleOpen = () => setOpen(true)
+  const handleClose = () => setOpen(false)
   const [page, setPage] = React.useState(0)
   const [rowsPerPage, setRowsPerPage] = React.useState(10)
   const [expense, setExpense] = useState([])
@@ -24,6 +29,45 @@ const DailyTransactions = (props) => {
   const [category, setCategory] = React.useState('income')
   const [formattedIncome, setFormattedIncome] = useState([])
   const [formattedExpenses, setFormattedExpenses] = useState([])
+  const [res, setRes] = useState('')
+  const onHandleDelete = async (_id, category) => {
+    setRes('')
+    let body = {
+      _id: _id,
+      category: category,
+    }
+    try {
+      const response = await axios.post(
+        process.env.REACT_APP_BACKEND_LINK + '/deleteExpense',
+        body
+      )
+      setRes(response)
+      swal({
+        title: 'Success!',
+        text: response.data.message,
+        icon: 'success',
+        button: 'OK!',
+        width: '100px',
+      })
+    } catch (e) {
+      if (e.message.includes('status')) {
+        swal({
+          title: 'Error!',
+          text: 'Data exist',
+          icon: 'error',
+          button: 'OK!',
+        })
+      }
+      if (e.message.includes('Network'))
+        swal({
+          title: 'Error!',
+          text: e.message,
+          icon: 'error',
+          button: 'OK!',
+          width: '100px',
+        })
+    }
+  }
 
   const handleChange = (event) => {
     setCategory(event.target.value)
@@ -41,18 +85,18 @@ const DailyTransactions = (props) => {
   //Fetch Expense and Income Data
   useEffect(() => {
     if (category === 'expense') {
-      axios.get( process.env.REACT_APP_BACKEND_LINK +`/expense`).then((res) => {
+      axios.get(process.env.REACT_APP_BACKEND_LINK + `/expense`).then((res) => {
         const expense = res.data
         setExpense(expense)
       })
     }
     if (category === 'income') {
-      axios.get( process.env.REACT_APP_BACKEND_LINK +`/income`).then((res) => {
+      axios.get(process.env.REACT_APP_BACKEND_LINK + `/income`).then((res) => {
         const income = res.data
         setIncome(income)
       })
     }
-  }, [category])
+  }, [category, res])
 
   //Filter Expenses and Income based on calender
   useEffect(() => {
@@ -117,7 +161,6 @@ const DailyTransactions = (props) => {
       }
     } else if (props.customDates[0] || props.customDates[1]) {
       for (let i = 0; i < income.length; i++) {
-        console.log(new Date(income[i].date).getTime(), props.customDates[0])
         if (
           new Date(income[i].date).getTime() >= props.customDates[0] &&
           new Date(income[i].date).getTime() <= props.customDates[1]
@@ -137,6 +180,8 @@ const DailyTransactions = (props) => {
       }
     }
   }, [props.calenderValue, expense, income, props.customDates])
+
+  useEffect(() => {}, [expense])
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -160,6 +205,11 @@ const DailyTransactions = (props) => {
 
   return (
     <AccordianComponent heading='Daily Transactions'>
+      <ModalComponent
+        open={open}
+        handleOpen={handleOpen}
+        handleClose={handleClose}
+      />
       <FormControl
         className='formButton'
         variant='standard'
@@ -211,6 +261,11 @@ const DailyTransactions = (props) => {
                         {moment(row.date).format('MMMM Do YYYY, h:mm a')}
                       </TableCell>
                       <TableCell>{row.medium}</TableCell>
+                      <TableCell>
+                        <DeleteForeverIcon
+                          onClick={() => onHandleDelete(row._id, category)}
+                        ></DeleteForeverIcon>
+                      </TableCell>
                     </StyledTableRow>
                   )
                 })}
@@ -252,6 +307,11 @@ const DailyTransactions = (props) => {
                         {moment(row.date).format('MMMM Do YYYY, h:mm a')}
                       </TableCell>
                       <TableCell>{row.medium}</TableCell>
+                      <TableCell>
+                        <DeleteForeverIcon
+                          onClick={() => onHandleDelete(row._id, category)}
+                        ></DeleteForeverIcon>
+                      </TableCell>
                     </StyledTableRow>
                   )
                 })}

@@ -10,13 +10,17 @@ const OverviewCard = (props) => {
   const [totalIncome, setTotalIncome] = useState(0)
 
   useEffect(() => {
-    axios.get( process.env.REACT_APP_BACKEND_LINK +`/totalExpense`).then((res) => {
-      setExpenses(res.data)
-    })
+    axios
+      .get(process.env.REACT_APP_BACKEND_LINK + `/totalExpense`)
+      .then((res) => {
+        setExpenses(res.data)
+      })
 
-    axios.get( process.env.REACT_APP_BACKEND_LINK +`/totalIncome`).then((res) => {
-      setIncome(res.data)
-    })
+    axios
+      .get(process.env.REACT_APP_BACKEND_LINK + `/totalIncome`)
+      .then((res) => {
+        setIncome(res.data)
+      })
   }, [])
 
   useEffect(() => {
@@ -41,8 +45,8 @@ const OverviewCard = (props) => {
           new Date().toLocaleDateString() ===
           new Date(income[i].date).toLocaleDateString()
         ) {
-          incomeSum += income[i]
-          setTotalIncome(income)
+          incomeSum += income[i].amount
+          setTotalIncome(incomeSum)
         }
       }
       //Daily Filter
@@ -101,6 +105,8 @@ const OverviewCard = (props) => {
       }
     }
   }, [props.calenderValue, expenses, income, props.customDates])
+  console.log('totalIncome', totalIncome)
+  console.log('totalExpense', totalExpense)
 
   return (
     <CardComponent
