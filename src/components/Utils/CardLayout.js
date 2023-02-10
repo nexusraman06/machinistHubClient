@@ -5,8 +5,10 @@ import CardActions from '@mui/material/CardActions'
 import CardContent from '@mui/material/CardContent'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
+import { useNavigate } from 'react-router-dom'
 
 const CardLayout = (props) => {
+  const navigate = useNavigate()
   return (
     <Card>
       <CardContent>
@@ -21,7 +23,11 @@ const CardLayout = (props) => {
         </Typography>
       </CardContent>
       <CardActions>
-        <Button size='small' variant='contained'>
+        <Button
+          size='small'
+          variant='contained'
+          onClick={() => navigate(`/clients/${props.name}`)}
+        >
           View Account
         </Button>
       </CardActions>

@@ -17,6 +17,8 @@ import MicsData from '../MicsData'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
 import ModalComponent from '../Utils/ModelComponent'
 import swal from 'sweetalert'
+import { InputAdornment, TextField } from '@mui/material'
+import SearchIcon from '@mui/icons-material/Search'
 const DailyTransactions = (props) => {
   const [open, setOpen] = React.useState(false)
   const handleOpen = () => setOpen(true)
@@ -30,11 +32,13 @@ const DailyTransactions = (props) => {
   const [formattedIncome, setFormattedIncome] = useState([])
   const [formattedExpenses, setFormattedExpenses] = useState([])
   const [res, setRes] = useState('')
+
+  const [searched, setSearched] = useState('')
   const onHandleDelete = async (_id, category) => {
     setRes('')
     let body = {
       _id: _id,
-      category: category,
+      category: category
     }
     try {
       const response = await axios.post(
@@ -47,7 +51,7 @@ const DailyTransactions = (props) => {
         text: response.data.message,
         icon: 'success',
         button: 'OK!',
-        width: '100px',
+        width: '100px'
       })
     } catch (e) {
       if (e.message.includes('status')) {
@@ -55,7 +59,7 @@ const DailyTransactions = (props) => {
           title: 'Error!',
           text: 'Data exist',
           icon: 'error',
-          button: 'OK!',
+          button: 'OK!'
         })
       }
       if (e.message.includes('Network'))
@@ -64,7 +68,7 @@ const DailyTransactions = (props) => {
           text: e.message,
           icon: 'error',
           button: 'OK!',
-          width: '100px',
+          width: '100px'
         })
     }
   }
@@ -122,7 +126,6 @@ const DailyTransactions = (props) => {
           new Date(income[i].date).toLocaleDateString()
         ) {
           incomeArr.push(income[i])
-          setFormattedIncome(incomeArr)
         }
       }
       //Daily Filter
@@ -133,7 +136,6 @@ const DailyTransactions = (props) => {
           new Date(expense[i].date).toLocaleDateString()
         ) {
           expenseArr.push(expense[i])
-          setFormattedExpenses(expenseArr)
         }
       }
       //Custom Filter
@@ -147,7 +149,6 @@ const DailyTransactions = (props) => {
           new Date(income[i].date).getTime() <= Date.now()
         ) {
           incomeArr.push(income[i])
-          setFormattedIncome(incomeArr)
         }
       }
       for (let i = 0; i < expense.length; i++) {
@@ -156,7 +157,6 @@ const DailyTransactions = (props) => {
           new Date(expense[i].date).getTime() <= Date.now()
         ) {
           expenseArr.push(expense[i])
-          setFormattedExpenses(expenseArr)
         }
       }
     } else if (props.customDates[0] || props.customDates[1]) {
@@ -166,7 +166,6 @@ const DailyTransactions = (props) => {
           new Date(income[i].date).getTime() <= props.customDates[1]
         ) {
           incomeArr.push(income[i])
-          setFormattedIncome(incomeArr)
         }
       }
       for (let i = 0; i < expense.length; i++) {
@@ -175,32 +174,53 @@ const DailyTransactions = (props) => {
           new Date(expense[i].date).getTime() <= props.customDates[1]
         ) {
           expenseArr.push(expense[i])
-          setFormattedExpenses(expenseArr)
         }
       }
     }
+
+    const sortedIncome = incomeArr
+      .slice()
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    const sortedExpense = expenseArr
+      .slice()
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+
+    setFormattedIncome(sortedIncome)
+    setFormattedExpenses(sortedExpense)
   }, [props.calenderValue, expense, income, props.customDates])
 
   useEffect(() => {}, [expense])
 
+  const filteredExpense = formattedExpenses.filter((row) => {
+    return row.payee.toLowerCase().includes(searched.toLowerCase())
+  })
+
+  const filteredIncome = formattedIncome.filter((row) => {
+    return row.client.toLowerCase().includes(searched.toLowerCase())
+  })
+
+  const cancelSearch = () => {
+    setSearched('')
+  }
+
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
       backgroundColor: theme.palette.common.black,
-      color: theme.palette.success.light,
+      color: theme.palette.success.light
     },
     [`&.${tableCellClasses.body}`]: {
-      fontSize: 14,
-    },
+      fontSize: 14
+    }
   }))
 
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     '&:nth-of-type(odd)': {
-      backgroundColor: '#b9dceb',
+      backgroundColor: '#b9dceb'
     },
     // hide last border
     '&:last-child td, &:last-child th': {
-      border: 0,
-    },
+      border: 0
+    }
   }))
 
   return (
@@ -226,6 +246,20 @@ const DailyTransactions = (props) => {
           <MenuItem value={'income'}>Income</MenuItem>
         </Select>
       </FormControl>
+      <TextField
+        value={searched}
+        onChange={(searchVal) => setSearched(searchVal.target.value)}
+        onCancelSearch={() => cancelSearch()}
+        size='small'
+        placeholder='Search'
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position='start'>
+              <SearchIcon />
+            </InputAdornment>
+          )
+        }}
+      />
 
       {category === 'expense' && (
         <TableContainer sx={{ maxHeight: 350 }}>
@@ -244,7 +278,7 @@ const DailyTransactions = (props) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {formattedExpenses
+              {filteredExpense
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row) => {
                   return (
@@ -290,7 +324,7 @@ const DailyTransactions = (props) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {formattedIncome
+              {filteredIncome
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row) => {
                   return (

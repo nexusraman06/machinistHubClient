@@ -105,8 +105,6 @@ const OverviewCard = (props) => {
       }
     }
   }, [props.calenderValue, expenses, income, props.customDates])
-  console.log('totalIncome', totalIncome)
-  console.log('totalExpense', totalExpense)
 
   return (
     <CardComponent

@@ -64,7 +64,7 @@ const Reports = (props) => {
         component='form'
         sx={{
           '& .MuiTextField-root': { m: 1, width: '25ch' },
-          mb: 3,
+          mb: 3
         }}
         noValidate
         autoComplete='off'
@@ -73,7 +73,8 @@ const Reports = (props) => {
           item
           xs={12}
           sm={12}
-          md={3}
+          md={12}
+          lg={3}
           display='flex'
           justifyContent='flex-end'
         >
@@ -81,14 +82,19 @@ const Reports = (props) => {
             <Box display='flex' justifyContent='flex-end'>
               {calender === 'custom' && (
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <Stack spacing={1} width='150px' height='0px'>
+                  <Stack spacing={1} width='200px' height='0px'>
                     <DesktopDatePicker
+                      width='150px'
                       label='From'
                       inputFormat='MM/DD/YYYY'
                       value={fromValue}
                       onChange={handleFromDateChange}
                       renderInput={(params) => (
-                        <TextField size='small' {...params} />
+                        <TextField
+                          size='small'
+                          {...params}
+                          sx={{ width: '150px' }}
+                        />
                       )}
                     />
                   </Stack>
@@ -97,14 +103,18 @@ const Reports = (props) => {
               {calender === 'custom' && (
                 <>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <Stack spacing={1} width='150px' height='0px'>
+                    <Stack spacing={1} width='200px' height='0px'>
                       <DesktopDatePicker
                         label='To'
                         inputFormat='MM/DD/YYYY'
                         value={toValue}
                         onChange={handleToDateChange}
                         renderInput={(params) => (
-                          <TextField size='small' {...params} />
+                          <TextField
+                            size='small'
+                            {...params}
+                            sx={{ width: '150px' }}
+                          />
                         )}
                       />
                     </Stack>
@@ -144,7 +154,7 @@ const Reports = (props) => {
           </Box>
         </Grid>
         {props.role === 'Admin' && (
-          <Grid item xs={12} sm={12} md={3}>
+          <Grid item xs={12} sm={12} md={12} lg={3}>
             <ExpenseOverviewCard
               className='reportMargin'
               calenderValue={calender}

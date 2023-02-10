@@ -74,7 +74,6 @@ const Login = () => {
     setLoading(false)
   }
 
-  console.log(loading)
   return (
     <div className='image'>
       <Box

@@ -16,31 +16,31 @@ import TablePagination from '@mui/material/TablePagination'
 import MicsData from '../MicsData'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
 import swal from 'sweetalert'
+import { InputAdornment, TextField } from '@mui/material'
+import SearchIcon from '@mui/icons-material/Search'
 const DailyActivities = (props) => {
   const [category, setCategory] = React.useState('submersible')
   const [page, setPage] = React.useState(0)
   const [rowsPerPage, setRowsPerPage] = React.useState(10)
   const [fanData, setFanData] = useState([])
   const [formattedFanData, setFormattedFanData] = useState([])
-  const [res, setRes] = useState('')
+  const [searched, setSearched] = useState('')
   const onHandleDelete = async (_id, category) => {
-    setRes('')
     let body = {
       _id: _id,
-      category: category,
+      category: category
     }
     try {
       const response = await axios.post(
         process.env.REACT_APP_BACKEND_LINK + '/deleteFanRotor',
         body
       )
-      setRes(response)
       swal({
         title: 'Success!',
         text: response.data.message,
         icon: 'success',
         button: 'OK!',
-        width: '100px',
+        width: '100px'
       })
     } catch (e) {
       if (e.message.includes('status')) {
@@ -48,7 +48,7 @@ const DailyActivities = (props) => {
           title: 'Error!',
           text: 'Data exist',
           icon: 'error',
-          button: 'OK!',
+          button: 'OK!'
         })
       }
       if (e.message.includes('Network'))
@@ -57,13 +57,9 @@ const DailyActivities = (props) => {
           text: e.message,
           icon: 'error',
           button: 'OK!',
-          width: '100px',
+          width: '100px'
         })
     }
-  }
-
-  const handleChange = (event) => {
-    setCategory(event.target.value)
   }
 
   const handleChangeRowsPerPage = (event) => {
@@ -94,7 +90,6 @@ const DailyActivities = (props) => {
 
     let fanArr = []
     if (props.calenderValue === 'daily') {
-
       setFormattedFanData([])
       for (let i = 0; i < fanData.length; i++) {
         if (
@@ -102,7 +97,6 @@ const DailyActivities = (props) => {
           new Date(fanData[i].date).toLocaleDateString()
         ) {
           fanArr.push(fanData[i])
-          setFormattedFanData(fanArr)
         }
       }
     } else if (
@@ -115,7 +109,6 @@ const DailyActivities = (props) => {
           new Date(fanData[i].date).getTime() <= Date.now()
         ) {
           fanArr.push(fanData[i])
-          setFormattedFanData(fanArr)
         }
       }
     } else if (props.customDates[0] || props.customDates[1]) {
@@ -125,35 +118,60 @@ const DailyActivities = (props) => {
           new Date(fanData[i].date).getTime() <= props.customDates[1]
         ) {
           fanArr.push(fanData[i])
-          setFormattedFanData(fanArr)
         }
       }
     }
+    const sortedFan = fanArr
+      .slice()
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    setFormattedFanData(sortedFan)
   }, [props.calenderValue, fanData, props.customDates])
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
       backgroundColor: theme.palette.common.black,
-      color: theme.palette.success.light,
+      color: theme.palette.success.light
     },
     [`&.${tableCellClasses.body}`]: {
-      fontSize: 14,
-    },
+      fontSize: 14
+    }
   }))
 
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     '&:nth-of-type(odd)': {
-      backgroundColor: '#b9dcee',
+      backgroundColor: '#b9dcee'
     },
     // hide last border
     '&:last-child td, &:last-child th': {
-      border: 0,
-    },
+      border: 0
+    }
   }))
+
+  const filteredFanData = formattedFanData.filter((row) => {
+    return row.client.toLowerCase().includes(searched.toLowerCase())
+  })
+
+  const cancelSearch = () => {
+    setSearched('')
+  }
 
   return (
     <>
       <AccordianComponent heading='Rotor Inventory'>
+        <TextField
+          value={searched}
+          onChange={(searchVal) => setSearched(searchVal.target.value)}
+          onCancelSearch={() => cancelSearch()}
+          size='small'
+          placeholder='Search'
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position='start'>
+                <SearchIcon />
+              </InputAdornment>
+            )
+          }}
+        />
         <TableContainer sx={{ maxHeight: 350 }}>
           <Table stickyHeader aria-label='sticky table'>
             <TableHead>
@@ -170,7 +188,7 @@ const DailyActivities = (props) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {formattedFanData
+              {filteredFanData
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row) => {
                   return (

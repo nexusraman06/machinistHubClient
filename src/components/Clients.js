@@ -11,7 +11,7 @@ const Clients = () => {
   const [clients, setClients] = useState([])
   const [category, setCategory] = React.useState('all')
   useEffect(() => {
-    axios.get( process.env.REACT_APP_BACKEND_LINK +`/client`).then((res) => {
+    axios.get(process.env.REACT_APP_BACKEND_LINK + `/client`).then((res) => {
       const persons = res.data
       setClients(persons)
     })
@@ -51,6 +51,7 @@ const Clients = () => {
                   name={client.name}
                   balance={client.balance}
                   phone={client.phone}
+                  id={client._id}
                 />
               </Grid>
             ) : (
@@ -61,6 +62,7 @@ const Clients = () => {
                     name={client.name}
                     balance={client.balance}
                     phone={client.phone}
+                    id={client._id}
                   />
                 </Grid>
               )
