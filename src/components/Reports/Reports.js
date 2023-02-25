@@ -171,17 +171,17 @@ const Reports = (props) => {
           />
         </Grid>
       </Grid>
-
-      <DailyTransactions
-        calenderValue={calender}
-        customDates={[fromValue, toValue]}
-        className='reportMargin'
-      />
       <DailyActivities
         calenderValue={calender}
         customDates={[fromValue, toValue]}
         className='reportMargin'
       />
+      <DailyTransactions
+        calenderValue={calender}
+        customDates={[fromValue, toValue]}
+        className='reportMargin'
+      />
+
       <Rotors
         calenderValue={calender}
         customDates={[fromValue, toValue]}

@@ -7,6 +7,7 @@ import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
 import AccordianComponent from './Utils/AccordianComponent'
+
 const Clients = () => {
   const [clients, setClients] = useState([])
   const [category, setCategory] = React.useState('all')

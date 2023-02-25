@@ -18,9 +18,8 @@ const DataEntry = () => {
   const [category, setCategory] = React.useState('submersible')
   const [client, setClient] = React.useState([])
   const [selectedClient, setSelectedClient] = React.useState('')
-  const [selectedRotorSize, setSelectedRotorSize] = React.useState('')
+  const [selectedRotorSize, setSelectedRotorSize] = React.useState('4.5')
   const [quantity, setQuantity] = React.useState([])
-  const [rotorSize, setRotorSize] = React.useState([])
   const [selectedFanRotorSize, setSelectedFanRotorSize] = React.useState('')
   const [selectedShaftSize, setSelectedShaftSize] = React.useState('')
   const [date, setDate] = React.useState(Date.now())
@@ -60,28 +59,34 @@ const DataEntry = () => {
       rotorSize: selectedFanRotorSize,
       shaftSize: selectedShaftSize,
       quantity: quantity,
-      date: new Date(date),
+      date: new Date(date)
     }
     let submersibleBody = {
       client: selectedClient,
       rotorSize: selectedRotorSize,
       quantity: quantity,
-      date: new Date(date),
+      date: new Date(date)
     }
     let response = ''
     try {
       if (category === 'submersible') {
-        response = await axios.post( process.env.REACT_APP_BACKEND_LINK +'/submersible', submersibleBody)
+        response = await axios.post(
+          process.env.REACT_APP_BACKEND_LINK + '/submersible',
+          submersibleBody
+        )
       }
       if (category === 'fan') {
-        response = await axios.post( process.env.REACT_APP_BACKEND_LINK +'/fan', fanBody)
+        response = await axios.post(
+          process.env.REACT_APP_BACKEND_LINK + '/fan',
+          fanBody
+        )
       }
       swal({
         title: 'Success!',
         text: response.data.message,
         icon: 'success',
         button: 'OK!',
-        width: '100px',
+        width: '100px'
       })
     } catch (e) {
       if (e.message.includes('status')) {
@@ -89,7 +94,7 @@ const DataEntry = () => {
           title: 'Error!',
           text: 'User Aleardy Exist',
           icon: 'error',
-          button: 'OK!',
+          button: 'OK!'
         })
       }
       if (e.message.includes('Network'))
@@ -98,7 +103,7 @@ const DataEntry = () => {
           text: e.message,
           icon: 'error',
           button: 'OK!',
-          width: '100px',
+          width: '100px'
         })
     }
   }
@@ -111,16 +116,31 @@ const DataEntry = () => {
       'CK Goltu',
       'CK Relxo',
       'ABC',
-      'Dhokha',
+      'Dhokha'
     ],
+    submersibleSize: [
+      3,
+      4,
+      4.5,
+      5,
+      '5v4',
+      5.5,
+      '5.5v4',
+      6,
+      '6v4',
+      '7v3',
+      '7v4',
+      8,
+      9,
+      10,
+      12,
+      15
+    ]
   }
 
   useEffect(() => {
-    axios.get( process.env.REACT_APP_BACKEND_LINK +`/client`).then((res) => {
+    axios.get(process.env.REACT_APP_BACKEND_LINK + `/client`).then((res) => {
       setClient(res.data)
-    })
-    axios.get( process.env.REACT_APP_BACKEND_LINK +`/submersibleChart`).then((res) => {
-      setRotorSize(res.data)
     })
   }, [])
   return (
@@ -153,7 +173,7 @@ const DataEntry = () => {
             component='form'
             sx={{
               '& .MuiTextField-root': { m: 1, width: '25ch' },
-              mb: 3,
+              mb: 3
             }}
             noValidate
             autoComplete='off'
@@ -242,7 +262,7 @@ const DataEntry = () => {
             component='form'
             sx={{
               '& .MuiTextField-root': { m: 1, width: '25ch' },
-              mb: 3,
+              mb: 3
             }}
             noValidate
             autoComplete='off'
@@ -266,21 +286,7 @@ const DataEntry = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={6} md={4} lg={3}>
-              <FormControl variant='standard' sx={{ m: 1, minWidth: 120 }}>
-                <InputLabel id='test-select-label'>Size</InputLabel>
-                <Select
-                  value={selectedRotorSize}
-                  onChange={handleRotorSizeSelect}
-                >
-                  {rotorSize.map((rs, i) => (
-                    <MenuItem key={'rotorSize' + i} value={rs.size}>
-                      {rs.size}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
+
             <Grid item xs={12} sm={6} md={4} lg={3}>
               <TextField
                 required
@@ -290,6 +296,21 @@ const DataEntry = () => {
                 value={quantity}
                 onChange={handleQuantitySelect}
               />
+            </Grid>
+            <Grid item xs={12} sm={6} md={4} lg={3}>
+              <FormControl variant='standard' sx={{ m: 1, minWidth: 120 }}>
+                <InputLabel id='test-select-label'>Size</InputLabel>
+                <Select
+                  value={selectedRotorSize}
+                  onChange={handleRotorSizeSelect}
+                >
+                  {fanItems.submersibleSize.map((rs, i) => (
+                    <MenuItem key={'rotorSize' + i} value={rs}>
+                      {rs}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>

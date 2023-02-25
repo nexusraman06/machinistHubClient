@@ -18,6 +18,7 @@ import swal from 'sweetalert'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
 import { InputAdornment, TextField } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
+import { useNavigate } from 'react-router-dom'
 const DailyActivities = (props) => {
   const [category, setCategory] = React.useState('submersible')
   const [page, setPage] = React.useState(0)
@@ -28,7 +29,7 @@ const DailyActivities = (props) => {
   const [formattedSubData, setFormattedSubData] = useState([])
   const [res, setRes] = useState('')
   const [searched, setSearched] = useState('')
-
+  const navigate = useNavigate()
   const onHandleDelete = async (_id, category) => {
     setRes('')
     let body = {
@@ -331,7 +332,11 @@ const DailyActivities = (props) => {
                         tabIndex={-1}
                         key={row.code}
                       >
-                        <TableCell>{row.client}</TableCell>
+                        <TableCell
+                          onClick={() => navigate(`/clients/${row.client}`)}
+                        >
+                          {row.client}
+                        </TableCell>
                         <TableCell>{row.quantity}</TableCell>
                         <TableCell>{row.rotorSize}</TableCell>
                         <TableCell>
