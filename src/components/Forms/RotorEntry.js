@@ -1,170 +1,368 @@
-import React, { useEffect } from 'react'
-import Layout from '../Layout'
-import Box from '@mui/material/Box'
-import TextField from '@mui/material/TextField'
+import React, { useEffect, useState } from 'react';
+import Layout from '../Layout';
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  Grid,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Container,
+  Typography,
+} from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
+import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import axios from 'axios';
+import swal from 'sweetalert';
+import dayjs from 'dayjs';
 
-import MenuItem from '@mui/material/MenuItem'
-import FormControl from '@mui/material/FormControl'
-import Select from '@mui/material/Select'
-import axios from 'axios'
-import { InputLabel } from '@mui/material'
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import { DatePicker } from '@mui/x-date-pickers/DatePicker'
-import swal from 'sweetalert'
-import ButtonComponent from '../Utils/ButtonComponent'
-import Grid from '@mui/material/Grid'
 const DataEntry = () => {
-  const [client, setClient] = React.useState([])
-  const [selectedClient, setSelectedClient] = React.useState('')
-  const [quantity, setQuantity] = React.useState([])
-  const [selectedFanRotorSize, setSelectedFanRotorSize] = React.useState('')
-  const [date, setDate] = React.useState(Date.now())
+  const [clients, setClients] = useState([]);
 
-  const handleChangeSelect = (event) => {
-    setSelectedClient(event.target.value)
-  }
+  // single-entry state
+  const [singleClient, setSingleClient] = useState('');
+  const [singleFrom, setSingleFrom] = useState('');
+  const [singleRotorSize, setSingleRotorSize] = useState('');
+  const [singleQuantity, setSingleQuantity] = useState('');
+  const [singleDate, setSingleDate] = useState(dayjs());
 
-  const handleQuantitySelect = (event) => {
-    setQuantity(event.target.value)
-  }
+  // multi-entry state
+  const defaultRow = {
+    client: '',
+    from: '',
+    rotorSize: '',
+    quantity: '',
+    date: dayjs(),
+  };
+  const [open, setOpen] = useState(false);
+  const [rows, setRows] = useState([{ ...defaultRow }]);
 
-  const handleFanRotorSize = (event) => {
-    setSelectedFanRotorSize(event.target.value)
-  }
-  const handleCancel = (event) => {
-    setQuantity(0)
-    setSelectedClient('')
-    setSelectedFanRotorSize('')
-  }
+  const rotorSizes = ["6'", "7'", '1"', '1.25"', "6' kit", '1" kit', '1.25 kit'];
 
-  const handleSubmit = async () => {
-    let fanRotorBody = {
-      client: selectedClient,
-      rotorSize: selectedFanRotorSize,
-
-      quantity: quantity,
-      date: new Date(date),
-    }
-    let response = ''
-    try {
-      response = await axios.post(process.env.REACT_APP_BACKEND_LINK +'/fanRotor', fanRotorBody)
-
-      swal({
-        title: 'Success!',
-        text: response.data.message,
-        icon: 'success',
-        button: 'OK!',
-        width: '100px',
-      })
-    } catch (e) {
-      if (e.message.includes('status')) {
-        swal({
-          title: 'Error!',
-          text: 'User Aleardy Exist',
-          icon: 'error',
-          button: 'OK!',
-        })
-      }
-      if (e.message.includes('Network'))
-        swal({
-          title: 'Error!',
-          text: e.message,
-          icon: 'error',
-          button: 'OK!',
-          width: '100px',
-        })
-    }
-  }
-
-  const fanItems = {
-    fanRotor: ["6'", "7'", '1"', '1.25"', "6' kit", '1" kit', '1.25 kit'],
-  }
-
+  // fetch & sort clients
   useEffect(() => {
-    axios.get( process.env.REACT_APP_BACKEND_LINK +`/client`).then((res) => {
-      setClient(res.data)
-    })
-  }, [])
+    axios.get(process.env.REACT_APP_BACKEND_LINK + '/client').then((res) => {
+      setClients(res.data.sort((a,b) => a.name.localeCompare(b.name)));
+    });
+  }, []);
+
+  // ensure one row on dialog open
+  useEffect(() => {
+    if (open && rows.length === 0) {
+      setRows([{ ...defaultRow }]);
+    }
+  }, [open, rows.length]);
+
+  // single validation
+  const isSingleValid = () =>
+    singleClient &&
+    singleFrom &&
+    singleRotorSize &&
+    singleQuantity &&
+    singleDate;
+
+  const handleSingleSubmit = async () => {
+    if (!isSingleValid()) {
+      swal('Error!', 'Please fill all fields before submitting.', 'error');
+      return;
+    }
+    try {
+      const payload = {
+        client: singleClient,
+        from: singleFrom,
+        rotorSize: singleRotorSize,
+        quantity: singleQuantity,
+        date: new Date(singleDate),
+      };
+      const response = await axios.post(
+        process.env.REACT_APP_BACKEND_LINK + '/fanRotor',
+        payload
+      );
+      swal('Success!', response.data.message, 'success');
+      // reset
+      setSingleClient('');
+      setSingleFrom('');
+      setSingleRotorSize('');
+      setSingleQuantity('');
+      setSingleDate(dayjs());
+    } catch (error) {
+      swal('Error!', error.message || 'Something went wrong.', 'error');
+    }
+  };
+
+  // multi handlers
+  const handleRowChange = (idx, field, val) => {
+    const next = [...rows];
+    next[idx][field] = val;
+    setRows(next);
+  };
+  const handleAddRow = () => setRows([...rows, { ...defaultRow }]);
+  const handleRemoveRow = (idx) => setRows(rows.filter((_, i) => i !== idx));
+
+  const handleMultiSubmit = async () => {
+    // validate all rows
+    for (let i = 0; i < rows.length; i++) {
+      const { client, from, rotorSize, quantity, date } = rows[i];
+      if (!client || !from || !rotorSize || !quantity || !date) {
+        swal('Error!', `Fill all fields in row ${i + 1}.`, 'error');
+        return;
+      }
+    }
+    try {
+      for (const row of rows) {
+        const payload = {
+          client: row.client,
+          from: row.from,
+          rotorSize: row.rotorSize,
+          quantity: row.quantity,
+          date: new Date(row.date),
+        };
+        await axios.post(
+          process.env.REACT_APP_BACKEND_LINK + '/fanRotor',
+          payload
+        );
+      }
+      swal('Success!', 'All entries submitted successfully!', 'success');
+      setRows([{ ...defaultRow }]);
+      setOpen(false);
+    } catch (error) {
+      swal('Error!', error.message || 'Something went wrong.', 'error');
+    }
+  };
+
   return (
-    <Layout title='Rotor Entry'>
-      <Box>
-        <Grid
-          container
-          display='flex'
-          justifyContent='space-around'
-          alignItems='end'
-          component='form'
-          sx={{
-            '& .MuiTextField-root': { m: 1, width: '25ch' },
-            mb: 3,
-          }}
-          noValidate
-          autoComplete='off'
-        >
-          <Grid item xs={12} sm={6} md={4} lg={12 / 5}>
-            <FormControl variant='standard' sx={{ m: 1, minWidth: 120 }}>
-              <InputLabel id='test-select-label'>Client</InputLabel>
-              <Select value={selectedClient} onChange={handleChangeSelect}>
-                {client.map(
-                  (cl, i) =>
-                    cl.category === 'fan' && (
-                      <MenuItem key={'clentsInFan' + i} value={cl.name}>
-                        {cl.name}
+    <Layout title="Rotor Entry">
+      {/* SINGLE ENTRY FORM */}
+      <Container maxWidth="md">
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              border: '1px solid #ddd',
+              borderRadius: 2,
+              p: 2,
+              width: '100%',
+              maxWidth: 600,
+              height: { xs: 'auto', sm: 250 },
+              backgroundColor: '#fafafa',
+              boxShadow: 3,
+            }}
+          >
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth variant="standard">
+                  <InputLabel>Client</InputLabel>
+                  <Select
+                    value={singleClient}
+                    onChange={(e) => setSingleClient(e.target.value)}
+                  >
+                    {clients
+                      .filter((c) => c.category === 'fan')
+                      .map((c, i) => (
+                        <MenuItem key={i} value={c.name}>
+                          {c.name}
+                        </MenuItem>
+                      ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  variant="standard"
+                  label="From"
+                  fullWidth
+                  value={singleFrom}
+                  onChange={(e) => setSingleFrom(e.target.value)}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth variant="standard">
+                  <InputLabel>Rotor Size</InputLabel>
+                  <Select
+                    value={singleRotorSize}
+                    onChange={(e) => setSingleRotorSize(e.target.value)}
+                  >
+                    {rotorSizes.map((s, i) => (
+                      <MenuItem key={i} value={s}>
+                        {s}
                       </MenuItem>
-                    )
-                )}
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} sm={6} md={4} lg={12 / 5}>
-            <FormControl variant='standard' sx={{ m: 1, minWidth: 120 }}>
-              <InputLabel id='test-select-label'>Rotor Size</InputLabel>
-              <Select
-                value={selectedFanRotorSize}
-                onChange={handleFanRotorSize}
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  variant="standard"
+                  label="Quantity"
+                  type="number"
+                  fullWidth
+                  value={singleQuantity}
+                  onChange={(e) => setSingleQuantity(e.target.value)}
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    label="Date"
+                    value={singleDate}
+                    onChange={(newVal) => setSingleDate(newVal)}
+                    renderInput={(params) => (
+                      <TextField {...params} variant="standard" fullWidth />
+                    )}
+                  />
+                </LocalizationProvider>
+              </Grid>
+            </Grid>
+            <Box textAlign="right" mt={2}>
+              <Button
+                variant="contained"
+                onClick={handleSingleSubmit}
+                disabled={!isSingleValid()}
               >
-                {fanItems.fanRotor.map((item, i) => (
-                  <MenuItem key={'fanItems' + i} value={item}>
-                    {item}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
+                Submit
+              </Button>
+            </Box>
+          </Box>
+        </Box>
+      </Container>
 
-          <Grid item xs={12} sm={6} md={4} lg={12 / 5}>
-            <TextField
-              required
-              id='standard-required'
-              label='Quantity'
-              variant='standard'
-              value={quantity}
-              onChange={handleQuantitySelect}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={4} lg={12 / 5}>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
-                label='Date'
-                value={date}
-                onChange={(newValue) => {
-                  setDate(newValue)
-                }}
-                renderInput={(params) => <TextField {...params} />}
-              />
-            </LocalizationProvider>
-          </Grid>
-        </Grid>
-        <ButtonComponent
-          submitLabel='Submit'
-          cancelLabel='Cancel'
-          submit={handleSubmit}
-          cancel={handleCancel}
-        />
+      {/* MULTIPLE ENTRY BUTTON */}
+      <Box textAlign="center" mt={4}>
+        <Button
+          variant="outlined"
+          onClick={() => setOpen(true)}
+          startIcon={<AddIcon />}
+        >
+          Add Multiple Entries
+        </Button>
       </Box>
-    </Layout>
-  )
-}
 
-export default DataEntry
+      {/* MULTI ENTRY DIALOG */}
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        maxWidth="lg"
+        fullWidth
+      >
+        <DialogTitle>Add Multiple Entries</DialogTitle>
+        <DialogContent dividers>
+          {rows.length === 0 && (
+            <Typography color="textSecondary" mt={1} mb={2}>
+              Use the + button to start adding rows.
+            </Typography>
+          )}
+          {rows.map((row, idx) => (
+            <Box key={idx} border={1} borderRadius={2} p={2} mb={3}>
+              <Grid container spacing={1} alignItems="center">
+                <Grid item xs={12} sm={2.4}>
+                  <FormControl fullWidth variant="standard">
+                    <InputLabel>Client</InputLabel>
+                    <Select
+                      value={row.client}
+                      onChange={(e) =>
+                        handleRowChange(idx, 'client', e.target.value)
+                      }
+                    >
+                      {clients
+                        .filter((c) => c.category === 'fan')
+                        .map((c, i) => (
+                          <MenuItem key={i} value={c.name}>
+                            {c.name}
+                          </MenuItem>
+                        ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={2.4}>
+                  <TextField
+                    variant="standard"
+                    label="From"
+                    fullWidth
+                    value={row.from}
+                    onChange={(e) =>
+                      handleRowChange(idx, 'from', e.target.value)
+                    }
+                  />
+                </Grid>
+                <Grid item xs={12} sm={2}>
+                  <FormControl fullWidth variant="standard">
+                    <InputLabel>Rotor Size</InputLabel>
+                    <Select
+                      value={row.rotorSize}
+                      onChange={(e) =>
+                        handleRowChange(idx, 'rotorSize', e.target.value)
+                      }
+                    >
+                      {rotorSizes.map((s, i) => (
+                        <MenuItem key={i} value={s}>
+                          {s}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={2}>
+                  <TextField
+                    variant="standard"
+                    label="Quantity"
+                    type="number"
+                    fullWidth
+                    value={row.quantity}
+                    onChange={(e) =>
+                      handleRowChange(idx, 'quantity', e.target.value)
+                    }
+                  />
+                </Grid>
+                <Grid item xs={12} sm={2.4}>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                      label="Date"
+                      value={row.date}
+                      onChange={(nv) => handleRowChange(idx, 'date', nv)}
+                      renderInput={(params) => (
+                        <TextField {...params} variant="standard" fullWidth />
+                      )}
+                    />
+                  </LocalizationProvider>
+                </Grid>
+                <Grid item xs={12} sm={0.8}>
+                  <IconButton
+                    color="error"
+                    onClick={() => handleRemoveRow(idx)}
+                    size="large"
+                  >
+                    <RemoveCircleIcon />
+                  </IconButton>
+                </Grid>
+              </Grid>
+            </Box>
+          ))}
+          <Box textAlign="center">
+            <IconButton onClick={handleAddRow} size="large">
+              <AddIcon fontSize="large" />
+            </IconButton>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpen(false)}>Cancel</Button>
+          <Button onClick={handleMultiSubmit} variant="contained">
+            Submit All
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Layout>
+  );
+};
+
+export default DataEntry;

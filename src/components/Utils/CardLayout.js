@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom'
 const CardLayout = (props) => {
   const navigate = useNavigate()
   return (
-    <Card>
+    <Card backgroundColor='primary.secondary' sx={{ minWidth: 275 }}>
       <CardContent>
         <Typography sx={{ fontSize: 28 }} color='text.secondary' gutterBottom>
           {props.name}
